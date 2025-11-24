@@ -119,6 +119,7 @@
         </div>
       </n-layout-content>
     </n-layout>
+    <CreateMomentModal v-model:show="showCreateModal" @success="handleCreateSuccess" />
   </div>
 </template>
 
@@ -134,6 +135,7 @@ import { AddOutline, ImagesOutline, LogOutOutline, ReloadOutline } from '@vicons
 import { getMoments } from '@/api/moment'
 import { useAuthStore } from '@/stores/auth'
 import MomentCard from '@/components/MomentCard.vue'
+import CreateMomentModal from '@/components/CreateMomentModal.vue'
 import type { MomentResponse, PhotoResponse } from '@/api/types'
 import { resolveUploadUrl } from '@/utils/url'
 
@@ -143,6 +145,7 @@ const authStore = useAuthStore()
 
 const activeTab = ref('timeline')
 const loading = ref(false)
+const showCreateModal = ref(false)
 const moments = ref<MomentResponse[]>([])
 const page = ref(0)
 const size = ref(20)
@@ -209,7 +212,11 @@ const handleMomentDeleted = (id: number) => {
 }
 
 const handleCreate = () => {
-  router.push('/create')
+  showCreateModal.value = true
+}
+
+const handleCreateSuccess = () => {
+  loadMoments(true)
 }
 
 const handleAlbums = () => {

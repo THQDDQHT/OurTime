@@ -1,82 +1,90 @@
 <template>
-  <div class="create-container">
-    <n-card title="发布瞬间" class="create-card">
-      <n-form ref="formRef" :model="form" :rules="rules">
-        <n-form-item path="content" label="内容">
-          <n-input
-            v-model:value="form.content"
-            type="textarea"
-            placeholder="记录这一刻的心情..."
-            :rows="5"
-          />
-        </n-form-item>
-        
-        <n-form-item path="happenedAt" label="发生时间">
-          <n-date-picker
-            v-model:value="form.happenedAt"
-            type="datetime"
-            placeholder="选择日期时间"
-            style="width: 100%"
-          />
-        </n-form-item>
-        
-        <n-form-item path="location" label="地点">
-          <n-input
-            v-model:value="form.location"
-            placeholder="如：Tokyo"
-          />
-        </n-form-item>
-        
-        <n-form-item path="albumId" label="相册">
-          <n-select
-            v-model:value="form.albumId"
-            placeholder="选择相册（可选）"
-            :options="albumOptions"
-            clearable
-          />
-        </n-form-item>
-        
-        <n-form-item label="照片">
-          <n-upload
-            v-model:file-list="fileList"
-            multiple
-            :max="9"
-            accept="image/*"
-            :custom-request="handleUpload"
-            list-type="image-card"
-            @remove="handleRemove"
-          >
-            <n-upload-dragger>
-              <div class="upload-content">
-                <n-icon size="48" :depth="3" class="upload-icon">
-                  <svg viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" />
-                  </svg>
-                </n-icon>
-              </div>
-            </n-upload-dragger>
-          </n-upload>
-        </n-form-item>
-      </n-form>
+  <n-modal
+    v-model:show="showModal"
+    preset="card"
+    title="发布瞬间"
+    style="width: 800px; max-width: 90vw;"
+    :bordered="false"
+    size="huge"
+    :segmented="{
+      content: 'soft',
+      footer: 'soft'
+    }"
+  >
+    <n-form ref="formRef" :model="form" :rules="rules">
+      <n-form-item path="content" label="内容">
+        <n-input
+          v-model:value="form.content"
+          type="textarea"
+          placeholder="记录这一刻的心情..."
+          :rows="5"
+        />
+      </n-form-item>
       
-      <template #action>
-        <div class="actions">
-          <n-button @click="handleCancel">取消</n-button>
-          <n-button type="primary" :loading="loading" @click="handleSubmit">
-            发布
-          </n-button>
-        </div>
-      </template>
-    </n-card>
-  </div>
+      <n-form-item path="happenedAt" label="发生时间">
+        <n-date-picker
+          v-model:value="form.happenedAt"
+          type="datetime"
+          placeholder="选择日期时间"
+          style="width: 100%"
+        />
+      </n-form-item>
+      
+      <n-form-item path="location" label="地点">
+        <n-input
+          v-model:value="form.location"
+          placeholder="如：Tokyo"
+        />
+      </n-form-item>
+      
+      <n-form-item path="albumId" label="相册">
+        <n-select
+          v-model:value="form.albumId"
+          placeholder="选择相册（可选）"
+          :options="albumOptions"
+          clearable
+        />
+      </n-form-item>
+      
+      <n-form-item label="照片">
+        <n-upload
+          v-model:file-list="fileList"
+          multiple
+          :max="9"
+          accept="image/*"
+          :custom-request="handleUpload"
+          list-type="image-card"
+          @remove="handleRemove"
+        >
+          <n-upload-dragger>
+            <div class="upload-content">
+              <n-icon size="48" :depth="3" class="upload-icon">
+                <svg viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" />
+                </svg>
+              </n-icon>
+            </div>
+          </n-upload-dragger>
+        </n-upload>
+      </n-form-item>
+    </n-form>
+    
+    <template #footer>
+      <div class="actions">
+        <n-button @click="handleClose">取消</n-button>
+        <n-button type="primary" :loading="loading" @click="handleSubmit">
+          发布
+        </n-button>
+      </div>
+    </template>
+  </n-modal>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useMessage } from 'naive-ui'
 import {
-  NCard, NForm, NFormItem, NInput, NDatePicker, NSelect, NUpload, NButton, NIcon, NUploadDragger
+  NModal, NForm, NFormItem, NInput, NDatePicker, NSelect, NUpload, NButton, NIcon, NUploadDragger
 } from 'naive-ui'
 import type { UploadFileInfo, UploadCustomRequestOptions } from 'naive-ui'
 import { createMoment } from '@/api/moment'
@@ -84,8 +92,21 @@ import { uploadFile } from '@/api/upload'
 import { getAlbums } from '@/api/album'
 import type { AlbumResponse, PhotoRequest } from '@/api/types'
 
-const router = useRouter()
+const props = defineProps<{
+  show: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:show', value: boolean): void
+  (e: 'success'): void
+}>()
+
 const message = useMessage()
+
+const showModal = computed({
+  get: () => props.show,
+  set: (val) => emit('update:show', val)
+})
 
 const formRef = ref()
 const loading = ref(false)
@@ -103,6 +124,38 @@ const form = ref({
 
 // 移除验证规则，改为在提交时手动检查
 const rules = {}
+
+// 监听 modal 打开，重置表单
+watch(() => props.show, (newVal) => {
+  if (newVal) {
+    resetForm()
+    // 每次打开都重新加载相册列表，确保最新
+    loadAlbums()
+  }
+})
+
+const resetForm = () => {
+  form.value = {
+    content: '',
+    happenedAt: Date.now(),
+    location: '',
+    albumId: null
+  }
+  fileList.value = []
+  photos.value = []
+}
+
+const loadAlbums = async () => {
+  try {
+    albums.value = await getAlbums()
+    albumOptions.value = albums.value.map(album => ({
+      label: album.name,
+      value: album.id
+    }))
+  } catch (error) {
+    console.error('加载相册失败', error)
+  }
+}
 
 // 压缩图片
 const compressImage = (file: File): Promise<File> => {
@@ -216,7 +269,8 @@ const handleSubmit = async () => {
     })
     
     message.success('发布成功')
-    router.push('/')
+    emit('success')
+    showModal.value = false
   } catch (error: any) {
     message.error(error.message || '发布失败')
   } finally {
@@ -224,34 +278,16 @@ const handleSubmit = async () => {
   }
 }
 
-const handleCancel = () => {
-  router.back()
+const handleClose = () => {
+  showModal.value = false
 }
 
-onMounted(async () => {
-  try {
-    albums.value = await getAlbums()
-    albumOptions.value = albums.value.map(album => ({
-      label: album.name,
-      value: album.id
-    }))
-  } catch (error) {
-    console.error('加载相册失败', error)
-  }
+onMounted(() => {
+  loadAlbums()
 })
 </script>
 
 <style scoped>
-.create-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.create-card {
-  margin-top: 20px;
-}
-
 .actions {
   display: flex;
   justify-content: flex-end;
