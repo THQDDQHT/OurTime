@@ -32,6 +32,20 @@
         </div>
 
         <div class="controls">
+          <n-button text class="control-btn" @click="musicStore.togglePlayMode" :title="modeTitle">
+            <template #icon>
+              <n-icon size="20" v-if="musicStore.playMode === 'random'">
+                <shuffle />
+              </n-icon>
+              <div v-else style="position: relative; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;">
+                <n-icon size="20">
+                  <repeat />
+                </n-icon>
+                <span v-if="musicStore.playMode === 'single'" style="position: absolute; font-size: 10px; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;">1</span>
+              </div>
+            </template>
+          </n-button>
+
           <n-button text class="control-btn" @click="musicStore.prev">
             <template #icon><n-icon size="20"><play-skip-back /></n-icon></template>
           </n-button>
@@ -118,9 +132,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { NIcon, NButton, NText, NModal, NTabs, NTabPane, NList, NListItem, NAvatar, NEmpty, NForm, NFormItem, NInput, NUpload, useMessage, type UploadCustomRequestOptions } from 'naive-ui'
-import { Play, Pause, PlaySkipBack, PlaySkipForward, ListOutline, MusicalNotes } from '@vicons/ionicons5'
+import { Play, Pause, PlaySkipBack, PlaySkipForward, ListOutline, MusicalNotes, Repeat, Shuffle } from '@vicons/ionicons5'
 import { useMusicStore, type Song } from '@/stores/music'
 import { createMusic, deleteMusic } from '@/api/music'
 import { uploadFile } from '@/api/upload'
@@ -138,9 +152,18 @@ const form = ref({
   coverUrl: ''
 })
 
-const rules = {
+  const rules = {
   url: { required: true, message: '请上传音乐文件', trigger: 'blur' }
 }
+
+const modeTitle = computed(() => {
+  switch (musicStore.playMode) {
+    case 'single': return '单曲循环'
+    case 'random': return '随机播放'
+    case 'loop': return '列表循环'
+    default: return '列表循环'
+  }
+})
 
 const togglePlay = () => {
   if (musicStore.isPlaying) {
@@ -165,7 +188,14 @@ const handleLoadedMetadata = () => {
 }
 
 const handleEnded = () => {
-  musicStore.next()
+  if (musicStore.playMode === 'single') {
+    if (audioRef.value) {
+      audioRef.value.currentTime = 0
+      audioRef.value.play()
+    }
+  } else {
+    musicStore.next()
+  }
 }
 
 const playSong = (song: Song) => {

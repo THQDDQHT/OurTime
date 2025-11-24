@@ -12,8 +12,11 @@ export interface Song {
   cover?: string
 }
 
+export type PlayMode = 'loop' | 'single' | 'random'
+
 export const useMusicStore = defineStore('music', () => {
   const isPlaying = ref(false)
+  const playMode = ref<PlayMode>('loop')
   const currentTime = ref(0)
   const duration = ref(0)
   const volume = ref(0.5)
@@ -71,6 +74,12 @@ export const useMusicStore = defineStore('music', () => {
     isPlaying.value = !isPlaying.value
   }
 
+  const togglePlayMode = () => {
+    const modes: PlayMode[] = ['loop', 'single', 'random']
+    const nextIndex = (modes.indexOf(playMode.value) + 1) % modes.length
+    playMode.value = modes[nextIndex]
+  }
+
   const play = () => {
     if (!currentSong.value) return
     isPlaying.value = true
@@ -82,7 +91,15 @@ export const useMusicStore = defineStore('music', () => {
 
   const next = () => {
     if (playlist.value.length === 0) return
-    currentIndex.value = (currentIndex.value + 1) % playlist.value.length
+    if (playMode.value === 'random') {
+      let nextIndex = Math.floor(Math.random() * playlist.value.length)
+      if (playlist.value.length > 1 && nextIndex === currentIndex.value) {
+        nextIndex = (nextIndex + 1) % playlist.value.length
+      }
+      currentIndex.value = nextIndex
+    } else {
+      currentIndex.value = (currentIndex.value + 1) % playlist.value.length
+    }
     currentSong.value = playlist.value[currentIndex.value]
     isPlaying.value = true
   }
@@ -102,7 +119,9 @@ export const useMusicStore = defineStore('music', () => {
     playlist,
     currentSong,
     showPlayer,
+    playMode,
     loadPlaylist,
+    togglePlayMode,
     togglePlay,
     play,
     pause,

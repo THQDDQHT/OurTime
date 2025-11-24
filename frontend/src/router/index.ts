@@ -16,12 +16,6 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/create',
-    name: 'CreateMoment',
-    component: () => import('@/views/CreateMoment.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
     path: '/albums',
     name: 'Albums',
     component: () => import('@/views/Albums.vue'),
