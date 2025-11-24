@@ -2,7 +2,7 @@
   <div class="music-player" :class="{ 'is-playing': musicStore.isPlaying }">
     <audio
       ref="audioRef"
-      :src="musicStore.currentSong.url"
+      :src="musicStore.currentSong?.url"
       @timeupdate="handleTimeUpdate"
       @ended="handleEnded"
       @loadedmetadata="handleLoadedMetadata"
@@ -10,10 +10,10 @@
 
     <div class="player-content">
       <!-- 封面/黑胶效果 -->
-      <div class="disc-container" :class="{ 'rotating': musicStore.isPlaying }">
+      <div class="disc-container" :class="{ 'rotating': musicStore.isPlaying }" @click="showManageModal = true">
         <div class="disc-wrapper">
           <img 
-            :src="musicStore.currentSong.cover || '/default-music.png'" 
+            :src="musicStore.currentSong?.cover || '/default-music.svg'" 
             class="disc-cover"
             alt="cover"
           />
@@ -22,9 +22,13 @@
       </div>
 
       <div class="info-controls">
-        <div class="song-info">
+        <div class="song-info" v-if="musicStore.currentSong">
           <n-text class="song-title" strong>{{ musicStore.currentSong.title }}</n-text>
           <n-text class="artist-name" depth="3">{{ musicStore.currentSong.artist }}</n-text>
+        </div>
+        <div class="song-info" v-else>
+          <n-text class="song-title" strong>点击黑胶片添加音乐</n-text>
+          <n-text class="artist-name" depth="3">OurTime</n-text>
         </div>
 
         <div class="controls">
@@ -44,20 +48,99 @@
           <n-button text class="control-btn" @click="musicStore.next">
             <template #icon><n-icon size="20"><play-skip-forward /></n-icon></template>
           </n-button>
+          
+          <n-button text class="control-btn" @click="showManageModal = true">
+            <template #icon><n-icon size="16"><list-outline /></n-icon></template>
+          </n-button>
         </div>
       </div>
     </div>
+
+    <!-- 歌单管理弹窗 -->
+    <n-modal v-model:show="showManageModal" preset="card" title="黑胶唱片架" class="music-modal">
+      <n-tabs type="segment">
+        <n-tab-pane name="list" tab="当前播放">
+          <n-list hoverable clickable>
+            <n-list-item v-for="song in musicStore.playlist" :key="song.id">
+              <template #prefix>
+                <n-avatar :src="song.cover || '/default-music.svg'" size="small" round />
+              </template>
+              <div class="song-list-item" @click="playSong(song)">
+                <div class="song-list-info">
+                  <n-text strong>{{ song.title }}</n-text>
+                  <n-text depth="3" style="font-size: 12px">{{ song.artist }}</n-text>
+                </div>
+                <div class="song-list-action">
+                  <n-icon v-if="musicStore.currentSong?.id === song.id" color="#8c7b75"><musical-notes /></n-icon>
+                  <n-button size="tiny" type="error" ghost @click.stop="handleDelete(song.id)">删除</n-button>
+                </div>
+              </div>
+            </n-list-item>
+            <n-empty v-if="musicStore.playlist.length === 0" description="还没有唱片，去添加几张吧" />
+          </n-list>
+        </n-tab-pane>
+        
+        <n-tab-pane name="add" tab="添加新歌">
+          <n-form ref="formRef" :model="form" :rules="rules">
+            <n-form-item label="音乐文件 (MP3 / FLAC)" path="url">
+              <n-upload
+                action="#"
+                :custom-request="handleUploadMusic"
+                :show-file-list="false"
+                accept=".mp3,.wav,.m4a,.flac"
+              >
+                <n-button v-if="!form.url">选择文件</n-button>
+                <n-text v-else type="success">已上传: {{ form.url.split('/').pop() }}</n-text>
+              </n-upload>
+            </n-form-item>
+            <n-form-item label="封面图 (可选)" path="coverUrl">
+              <n-upload
+                action="#"
+                :custom-request="handleUploadCover"
+                :show-file-list="false"
+                accept="image/*"
+              >
+                <div class="upload-cover-preview" v-if="form.coverUrl">
+                   <img :src="resolveUploadUrl(form.coverUrl)" />
+                </div>
+                <n-button v-else>上传封面</n-button>
+              </n-upload>
+            </n-form-item>
+            
+            <div class="form-actions">
+               <n-button type="primary" block @click="handleSubmit" :loading="submitting">添加到唱片架</n-button>
+            </div>
+          </n-form>
+        </n-tab-pane>
+      </n-tabs>
+    </n-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
-import { NIcon, NButton, NText } from 'naive-ui'
-import { Play, Pause, PlaySkipBack, PlaySkipForward } from '@vicons/ionicons5'
-import { useMusicStore } from '@/stores/music'
+import { NIcon, NButton, NText, NModal, NTabs, NTabPane, NList, NListItem, NAvatar, NEmpty, NForm, NFormItem, NInput, NUpload, useMessage, type UploadCustomRequestOptions } from 'naive-ui'
+import { Play, Pause, PlaySkipBack, PlaySkipForward, ListOutline, MusicalNotes } from '@vicons/ionicons5'
+import { useMusicStore, type Song } from '@/stores/music'
+import { createMusic, deleteMusic } from '@/api/music'
+import { uploadFile } from '@/api/upload'
+import { resolveUploadUrl } from '@/utils/url'
 
 const musicStore = useMusicStore()
+const message = useMessage()
 const audioRef = ref<HTMLAudioElement | null>(null)
+const showManageModal = ref(false)
+const submitting = ref(false)
+const formRef = ref()
+
+const form = ref({
+  url: '',
+  coverUrl: ''
+})
+
+const rules = {
+  url: { required: true, message: '请上传音乐文件', trigger: 'blur' }
+}
 
 const togglePlay = () => {
   if (musicStore.isPlaying) {
@@ -85,17 +168,83 @@ const handleEnded = () => {
   musicStore.next()
 }
 
+const playSong = (song: Song) => {
+  musicStore.currentSong = song
+  musicStore.play()
+}
+
+const handleDelete = async (id: number) => {
+  try {
+    await deleteMusic(id)
+    message.success('已删除')
+    await musicStore.loadPlaylist()
+  } catch (error) {
+    message.error('删除失败')
+  }
+}
+
+const handleUploadMusic = async ({ file, onFinish, onError }: UploadCustomRequestOptions) => {
+  try {
+    if (!file.file) return
+    const res = await uploadFile(file.file)
+    form.value.url = res.url
+    onFinish()
+    message.success('音乐上传成功')
+  } catch (e) {
+    onError()
+    message.error('上传失败')
+  }
+}
+
+const handleUploadCover = async ({ file, onFinish, onError }: UploadCustomRequestOptions) => {
+  try {
+    if (!file.file) return
+    const res = await uploadFile(file.file)
+    form.value.coverUrl = res.url
+    onFinish()
+    message.success('封面上传成功')
+  } catch (e) {
+    onError()
+    message.error('上传失败')
+  }
+}
+
+const handleSubmit = async () => {
+  try {
+    await formRef.value?.validate()
+    submitting.value = true
+    await createMusic(form.value)
+    message.success('添加成功')
+    
+    // 重置表单
+    form.value = { url: '', coverUrl: '' }
+    await musicStore.loadPlaylist()
+    
+    // 切换回列表tab (简单做法: 暂时不切，或者手动控制activeTab)
+  } catch (e) {
+    message.error('添加失败')
+  } finally {
+    submitting.value = false
+  }
+}
+
+onMounted(() => {
+  musicStore.loadPlaylist()
+})
+
 // 监听播放状态变化（例如从其他地方控制）
 watch(() => musicStore.isPlaying, (newVal) => {
   if (newVal) {
-    audioRef.value?.play()
+    // 必须加 nextTick 或者 setTimeout 确保 src 已经变了
+    setTimeout(() => audioRef.value?.play(), 50)
   } else {
     audioRef.value?.pause()
   }
 })
 
 // 监听切歌
-watch(() => musicStore.currentSong, () => {
+watch(() => musicStore.currentSong, (newSong) => {
+  if (!newSong) return
   // 自动播放下一首
   setTimeout(() => {
     if (musicStore.isPlaying) {
@@ -150,6 +299,7 @@ watch(() => musicStore.volume, (newVal) => {
   width: 48px;
   height: 48px;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .disc-wrapper {
@@ -219,7 +369,7 @@ watch(() => musicStore.volume, (newVal) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .control-btn {
@@ -237,5 +387,47 @@ watch(() => musicStore.volume, (newVal) => {
 
 .play-btn:hover {
   background: rgba(93, 64, 55, 0.1);
+}
+
+.music-modal {
+  width: 400px;
+}
+
+.song-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.song-list-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-left: 12px;
+}
+
+.song-list-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-cover-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.upload-cover-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.form-actions {
+  margin-top: 24px;
 }
 </style>

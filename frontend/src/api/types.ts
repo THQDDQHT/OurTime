@@ -69,3 +69,19 @@ export interface PageResponse<T> {
   number: number
 }
 
+export interface MusicRequest {
+  title: string
+  artist: string
+  url: string
+  coverUrl?: string
+}
+
+export interface MusicResponse {
+  id: number
+  title: string
+  artist: string
+  url: string
+  coverUrl?: string
+  createdAt: string
+}
+

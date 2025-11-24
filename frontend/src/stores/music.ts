@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { getMusicList } from '@/api/music'
+import type { MusicResponse } from '@/api/types'
+import { resolveUploadUrl } from '@/utils/url'
 
 export interface Song {
   id: number
@@ -16,33 +19,60 @@ export const useMusicStore = defineStore('music', () => {
   const volume = ref(0.5)
   const currentIndex = ref(0)
   const showPlayer = ref(true)
+  const playlist = ref<Song[]>([])
+  const currentSong = ref<Song | null>(null)
 
-  // 预设一些符合氛围的轻音乐
-  // 注意：实际项目中应替换为可靠的CDN链接或后端存储的链接
-  const playlist = ref<Song[]>([
-    {
-      id: 1,
-      title: 'Gymnopédie No.1',
-      artist: 'Erik Satie',
-      url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=gymnopedie-no-1-106464.mp3',
-      cover: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=200&h=200&fit=crop'
-    },
-    {
-      id: 2,
-      title: 'River Flows In You',
-      artist: 'Yiruma (Cover)',
-      url: 'https://cdn.pixabay.com/download/audio/2022/02/10/audio_fc06c71453.mp3?filename=river-flows-in-you-14260.mp3', // 示例链接
-      cover: 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=200&h=200&fit=crop'
+  const loadPlaylist = async () => {
+    try {
+      const musicList = await getMusicList()
+      if (musicList.length > 0) {
+        playlist.value = musicList.map(m => {
+          // 从 url 中解析文件名作为标题
+          const filename = m.url.split('/').pop() || 'Unknown Track'
+          // 解码 URL
+          let title = decodeURIComponent(filename)
+          
+          // 去掉 uuid 前缀 (假设格式为 uuid_filename)
+          if (title.includes('_')) {
+            title = title.split('_').slice(1).join('_')
+          }
+          
+          // 去掉文件后缀 (.mp3, .flac 等)
+          if (title.lastIndexOf('.') > 0) {
+            title = title.substring(0, title.lastIndexOf('.'))
+          }
+          
+          return {
+            id: m.id,
+            title: title, 
+            artist: 'Local Music', // 通用艺术家名
+            url: resolveUploadUrl(m.url),
+            cover: m.coverUrl ? resolveUploadUrl(m.coverUrl) : undefined
+          }
+        })
+        
+        // 如果当前没有播放歌曲，或者当前歌曲不在新的播放列表中，则重置为第一首
+        if (!currentSong.value || !playlist.value.find(s => s.id === currentSong.value?.id)) {
+          currentSong.value = playlist.value[0]
+          currentIndex.value = 0
+        }
+      } else {
+        // 空列表处理
+        playlist.value = []
+        currentSong.value = null
+      }
+    } catch (error) {
+      console.error('Failed to load music playlist', error)
     }
-  ])
-
-  const currentSong = ref<Song>(playlist.value[0])
+  }
 
   const togglePlay = () => {
+    if (!currentSong.value) return
     isPlaying.value = !isPlaying.value
   }
 
   const play = () => {
+    if (!currentSong.value) return
     isPlaying.value = true
   }
 
@@ -51,12 +81,14 @@ export const useMusicStore = defineStore('music', () => {
   }
 
   const next = () => {
+    if (playlist.value.length === 0) return
     currentIndex.value = (currentIndex.value + 1) % playlist.value.length
     currentSong.value = playlist.value[currentIndex.value]
     isPlaying.value = true
   }
 
   const prev = () => {
+    if (playlist.value.length === 0) return
     currentIndex.value = (currentIndex.value - 1 + playlist.value.length) % playlist.value.length
     currentSong.value = playlist.value[currentIndex.value]
     isPlaying.value = true
@@ -70,6 +102,7 @@ export const useMusicStore = defineStore('music', () => {
     playlist,
     currentSong,
     showPlayer,
+    loadPlaylist,
     togglePlay,
     play,
     pause,
