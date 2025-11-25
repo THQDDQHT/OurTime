@@ -110,6 +110,10 @@ const getGridClass = (count: number) => {
 
 const handleAlbumClick = () => {
   if (props.moment.albumId) {
+    // If we are already on the album detail page, do nothing
+    if (router.currentRoute.value.name === 'AlbumDetail' && Number(router.currentRoute.value.params.id) === props.moment.albumId) {
+        return;
+    }
     router.push(`/albums/${props.moment.albumId}`);
   }
 };

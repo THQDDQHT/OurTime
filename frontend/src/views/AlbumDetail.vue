@@ -272,7 +272,7 @@ const handleCreateSuccess = () => {
 };
 
 const handleBack = () => {
-  router.push("/albums");
+  router.push("/");
 };
 
 onMounted(() => {
