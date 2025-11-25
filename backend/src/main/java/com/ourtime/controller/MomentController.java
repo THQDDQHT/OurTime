@@ -31,11 +31,12 @@ public class MomentController {
     public ApiResponse<Page<MomentResponse>> getMoments(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) Long albumId,
             HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
         String role = (String) request.getAttribute("role");
         Pageable pageable = PageRequest.of(page, size);
-        Page<MomentResponse> moments = momentService.getMoments(pageable, userId, role);
+        Page<MomentResponse> moments = momentService.getMoments(pageable, userId, role, albumId);
         return ApiResponse.success(moments);
     }
     

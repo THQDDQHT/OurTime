@@ -17,7 +17,7 @@
             :key="album.id"
             class="album-card"
             hoverable
-            @click="handleEdit(album)"
+            @click="handleView(album)"
           >
             <template #cover>
               <div class="album-cover">
@@ -207,6 +207,10 @@ const loadAlbums = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const handleView = (album: AlbumResponse) => {
+  router.push(`/albums/${album.id}`);
 };
 
 const handleEdit = (album: AlbumResponse) => {

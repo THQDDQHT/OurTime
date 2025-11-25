@@ -20,6 +20,12 @@ const routes: RouteRecordRaw[] = [
     name: 'Albums',
     component: () => import('@/views/Albums.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/albums/:id',
+    name: 'AlbumDetail',
+    component: () => import('@/views/AlbumDetail.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

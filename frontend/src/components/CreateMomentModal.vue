@@ -103,6 +103,7 @@ import type { AlbumResponse, PhotoRequest } from "@/api/types";
 
 const props = defineProps<{
   show: boolean;
+  initialAlbumId?: number;
 }>();
 
 const emit = defineEmits<{
@@ -151,7 +152,7 @@ const resetForm = () => {
     content: "",
     happenedAt: Date.now(),
     location: "",
-    albumId: null,
+    albumId: props.initialAlbumId || null,
   };
   fileList.value = [];
   photos.value = [];

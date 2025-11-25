@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface MomentRepository extends JpaRepository<Moment, Long> {
     Page<Moment> findAllByOrderByHappenedAtDesc(Pageable pageable);
     Page<Moment> findByUserIdOrderByHappenedAtDesc(Long userId, Pageable pageable);
+    Page<Moment> findByAlbumIdOrderByHappenedAtDesc(Long albumId, Pageable pageable);
+    Page<Moment> findByAlbumIdAndUserIdOrderByHappenedAtDesc(Long albumId, Long userId, Pageable pageable);
     Optional<Moment> findByIdAndUserId(Long id, Long userId);
 }
 

@@ -49,11 +49,19 @@ public class MomentService {
         return toResponse(moment);
     }
     
-    public Page<MomentResponse> getMoments(Pageable pageable, Long userId, String role) {
+    public Page<MomentResponse> getMoments(Pageable pageable, Long userId, String role, Long albumId) {
         if ("ADMIN".equals(role)) {
+            if (albumId != null) {
+                return momentRepository.findByAlbumIdOrderByHappenedAtDesc(albumId, pageable)
+                        .map(this::toResponse);
+            }
             return momentRepository.findAllByOrderByHappenedAtDesc(pageable)
                     .map(this::toResponse);
         } else {
+            if (albumId != null) {
+                return momentRepository.findByAlbumIdAndUserIdOrderByHappenedAtDesc(albumId, userId, pageable)
+                        .map(this::toResponse);
+            }
             return momentRepository.findByUserIdOrderByHappenedAtDesc(userId, pageable)
                     .map(this::toResponse);
         }

@@ -5,9 +5,9 @@ export const createMoment = (data: MomentRequest): Promise<MomentResponse> => {
   return request.post('/moments', data)
 }
 
-export const getMoments = (page: number = 0, size: number = 20): Promise<PageResponse<MomentResponse>> => {
+export const getMoments = (page: number = 0, size: number = 20, albumId?: number): Promise<PageResponse<MomentResponse>> => {
   return request.get('/moments', {
-    params: { page, size }
+    params: { page, size, albumId }
   })
 }
 
