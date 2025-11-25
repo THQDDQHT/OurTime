@@ -8,7 +8,12 @@
             <n-icon size="12"><location-outline /></n-icon>
             {{ moment.location }}
           </span>
-          <span v-if="moment.albumName" class="album-tag">
+          <span
+            v-if="moment.albumName"
+            class="album-tag"
+            :class="{ clickable: !!moment.albumId }"
+            @click.stop="handleAlbumClick"
+          >
             <n-icon size="12"><folder-outline /></n-icon> {{ moment.albumName }}
           </span>
         </div>
@@ -72,6 +77,7 @@ import {
 import { deleteMoment } from "@/api/moment";
 import type { MomentResponse } from "@/api/types";
 import { resolveUploadUrl } from "@/utils/url";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
   moment: MomentResponse;
@@ -82,6 +88,7 @@ const emit = defineEmits<{
 }>();
 
 const message = useMessage();
+const router = useRouter();
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -99,6 +106,12 @@ const getGridClass = (count: number) => {
   if (count === 2) return "grid-2";
   if (count === 4) return "grid-2-2";
   return "grid-3";
+};
+
+const handleAlbumClick = () => {
+  if (props.moment.albumId) {
+    router.push(`/albums/${props.moment.albumId}`);
+  }
 };
 
 const handleDelete = async () => {
@@ -164,6 +177,17 @@ const handleDelete = async () => {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.album-tag.clickable {
+  cursor: pointer;
+  color: #5d4037;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.album-tag.clickable:hover {
+  color: #3e2723;
+  text-decoration: underline;
 }
 
 .delete-btn {
