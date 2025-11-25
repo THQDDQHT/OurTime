@@ -66,8 +66,9 @@
     <n-modal
       v-model:show="showCreateModal"
       preset="card"
+      style="width: 800px; max-width: 90vw"
+      size="huge"
       :title="editingAlbum ? '编辑相册' : '创建相册'"
-      class="album-modal"
     >
       <n-form ref="formRef" :model="form" :rules="rules">
         <n-form-item path="name" label="相册名称">
@@ -102,7 +103,6 @@
                     <image-outline />
                   </n-icon>
                 </div>
-                <n-text style="font-size: 16px"> 点击或拖拽上传封面 </n-text>
               </n-upload-dragger>
             </n-upload>
           </div>
@@ -357,10 +357,6 @@ onMounted(() => {
 .header-actions {
   display: flex;
   gap: 12px;
-}
-
-.album-modal {
-  width: 600px;
 }
 
 .cover-upload-container {
