@@ -5,7 +5,8 @@
         <span class="date">{{ formatDate(moment.happenedAt) }}</span>
         <div class="meta-extras">
           <span v-if="moment.location" class="location">
-            <n-icon size="12"><location-outline /></n-icon> {{ moment.location }}
+            <n-icon size="12"><location-outline /></n-icon>
+            {{ moment.location }}
           </span>
           <span v-if="moment.albumName" class="album-tag">
             <n-icon size="12"><folder-outline /></n-icon> {{ moment.albumName }}
@@ -27,17 +28,17 @@
         确定要删除这段回忆吗？
       </n-popconfirm>
     </div>
-    
+
     <div v-if="moment.content" class="card-content">
       <p>{{ moment.content }}</p>
     </div>
-    
+
     <div v-if="moment.photos && moment.photos.length > 0" class="card-photos">
       <n-image-group>
         <div class="photo-grid" :class="getGridClass(moment.photos.length)">
-          <div 
-            v-for="photo in moment.photos" 
-            :key="photo.id" 
+          <div
+            v-for="photo in moment.photos"
+            :key="photo.id"
             class="photo-wrapper"
           >
             <n-image
@@ -55,49 +56,60 @@
 </template>
 
 <script setup lang="ts">
-import { NButton, NImage, NImageGroup, NIcon, NPopconfirm, useMessage } from 'naive-ui'
-import { TrashOutline, LocationOutline, FolderOutline } from '@vicons/ionicons5'
-import { deleteMoment } from '@/api/moment'
-import type { MomentResponse } from '@/api/types'
-import { resolveUploadUrl } from '@/utils/url'
+import {
+  NButton,
+  NImage,
+  NImageGroup,
+  NIcon,
+  NPopconfirm,
+  useMessage,
+} from "naive-ui";
+import {
+  TrashOutline,
+  LocationOutline,
+  FolderOutline,
+} from "@vicons/ionicons5";
+import { deleteMoment } from "@/api/moment";
+import type { MomentResponse } from "@/api/types";
+import { resolveUploadUrl } from "@/utils/url";
 
 const props = defineProps<{
-  moment: MomentResponse
-}>()
+  moment: MomentResponse;
+}>();
 
 const emit = defineEmits<{
-  deleted: [id: number]
-}>()
+  deleted: [id: number];
+}>();
 
-const message = useMessage()
+const message = useMessage();
 
 const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr)
+  const date = new Date(dateStr);
   const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'long'
-  }
-  return date.toLocaleDateString('zh-CN', options)
-}
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long",
+  };
+  return date.toLocaleDateString("zh-CN", options);
+};
 
 const getGridClass = (count: number) => {
-  if (count === 1) return 'grid-1'
-  if (count === 2) return 'grid-2'
-  if (count === 4) return 'grid-2-2' 
-  return 'grid-3'
-}
+  if (count === 1) return "grid-1";
+  if (count === 2) return "grid-2";
+  if (count === 4) return "grid-2-2";
+  return "grid-3";
+};
 
 const handleDelete = async () => {
   try {
-    await deleteMoment(props.moment.id)
-    message.success('回忆已移除')
-    emit('deleted', props.moment.id)
+    await deleteMoment(props.moment.id);
+    message.success("回忆已移除");
+    emit("deleted", props.moment.id);
   } catch (error: any) {
-    message.error(error.message || '删除失败')
+    message.error(error.message || "删除失败");
   }
-}
+};
 </script>
 
 <style scoped>
@@ -106,19 +118,16 @@ const handleDelete = async () => {
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 32px;
-  box-shadow: 
-    0 1px 3px rgba(0,0,0,0.05),
-    0 10px 20px -5px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05),
+    0 10px 20px -5px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid rgba(0,0,0,0.02);
+  border: 1px solid rgba(0, 0, 0, 0.02);
   position: relative;
 }
 
 .moment-card:hover {
   transform: translateY(-2px);
-  box-shadow: 
-    0 4px 6px rgba(0,0,0,0.05),
-    0 15px 25px -5px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 15px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
@@ -137,7 +146,7 @@ const handleDelete = async () => {
 }
 
 .date {
-  font-family: 'Noto Serif SC', serif;
+  font-family: "Noto Serif SC", serif;
   font-size: 1.1rem;
   font-weight: 600;
   color: #3e2723;
@@ -150,7 +159,8 @@ const handleDelete = async () => {
   color: #90a4ae;
 }
 
-.location, .album-tag {
+.location,
+.album-tag {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -222,4 +232,3 @@ const handleDelete = async () => {
   transform: scale(1.05);
 }
 </style>
-

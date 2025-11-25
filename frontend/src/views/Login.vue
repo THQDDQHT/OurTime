@@ -5,12 +5,14 @@
         <h1 class="brand-title">OurTime</h1>
         <p class="brand-subtitle">时光博物馆</p>
       </div>
-      
+
       <n-card class="login-card" :bordered="false" size="huge">
         <div class="card-header">
-          <n-text class="card-title">{{ isRegisterMode ? '创建新账号' : '开启记忆之门' }}</n-text>
+          <n-text class="card-title">{{
+            isRegisterMode ? "创建新账号" : "开启记忆之门"
+          }}</n-text>
         </div>
-        
+
         <n-form ref="formRef" :model="form" :rules="rules" size="large">
           <n-form-item path="username" :show-label="false">
             <n-input
@@ -25,7 +27,7 @@
               </template>
             </n-input>
           </n-form-item>
-          
+
           <n-form-item path="password" :show-label="false">
             <n-input
               v-model:value="form.password"
@@ -41,7 +43,7 @@
             </n-input>
           </n-form-item>
         </n-form>
-        
+
         <div class="actions">
           <n-button
             type="primary"
@@ -51,107 +53,109 @@
             @click="handleSubmit"
             class="login-btn"
           >
-            {{ isRegisterMode ? '注册' : '登录' }}
+            {{ isRegisterMode ? "注册" : "登录" }}
           </n-button>
-          
+
           <div class="toggle-mode">
             <n-button text @click="toggleMode" :disabled="loading">
-              {{ isRegisterMode ? '已有账号？去登录' : '没有账号？去注册' }}
+              {{ isRegisterMode ? "已有账号？去登录" : "没有账号？去注册" }}
             </n-button>
           </div>
         </div>
       </n-card>
-      
+
       <div class="footer">
-        <n-text depth="3" class="copyright">© 2023 OurTime. All memories reserved.</n-text>
+        <n-text depth="3" class="copyright"
+          >© 2023 OurTime. All memories reserved.</n-text
+        >
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useMessage } from 'naive-ui'
-import { NCard, NForm, NFormItem, NInput, NButton, NText } from 'naive-ui'
-import { login, register } from '@/api/auth'
-import { useAuthStore } from '@/stores/auth'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useMessage } from "naive-ui";
+import { NCard, NForm, NFormItem, NInput, NButton, NText } from "naive-ui";
+import { login, register } from "@/api/auth";
+import { useAuthStore } from "@/stores/auth";
 
-const router = useRouter()
-const message = useMessage()
-const authStore = useAuthStore()
+const router = useRouter();
+const message = useMessage();
+const authStore = useAuthStore();
 
-const formRef = ref()
-const loading = ref(false)
-const isRegisterMode = ref(false)
+const formRef = ref();
+const loading = ref(false);
+const isRegisterMode = ref(false);
 const form = ref({
-  username: '',
-  password: ''
-})
+  username: "",
+  password: "",
+});
 
 const rules = {
   username: {
     required: true,
-    message: '请输入用户名',
-    trigger: 'blur'
+    message: "请输入用户名",
+    trigger: "blur",
   },
   password: {
     required: true,
-    message: '请输入密码',
-    trigger: 'blur'
-  }
-}
+    message: "请输入密码",
+    trigger: "blur",
+  },
+};
 
 const handleLogin = async () => {
   try {
-    await formRef.value?.validate()
-    loading.value = true
-    
-    const response = await login({ 
-      username: form.value.username, 
-      password: form.value.password 
-    })
-    authStore.setAuth(response)
-    message.success('欢迎回来，时光旅人')
-    router.push('/')
+    await formRef.value?.validate();
+    loading.value = true;
+
+    const response = await login({
+      username: form.value.username,
+      password: form.value.password,
+    });
+    authStore.setAuth(response);
+    message.success("欢迎回来，时光旅人");
+    router.push("/");
   } catch (error: any) {
-    message.error(error.message || '登录失败，请重试')
+    message.error(error.message || "登录失败，请重试");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const handleRegister = async () => {
   try {
-    await formRef.value?.validate()
-    loading.value = true
-    
-    const response = await register({ 
-      username: form.value.username, 
-      password: form.value.password 
-    })
-    authStore.setAuth(response)
-    message.success('注册成功，欢迎加入')
-    router.push('/')
+    await formRef.value?.validate();
+    loading.value = true;
+
+    const response = await register({
+      username: form.value.username,
+      password: form.value.password,
+    });
+    authStore.setAuth(response);
+    message.success("注册成功，欢迎加入");
+    router.push("/");
   } catch (error: any) {
-    message.error(error.message || '注册失败，请重试')
+    message.error(error.message || "注册失败，请重试");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const handleSubmit = () => {
   if (isRegisterMode.value) {
-    handleRegister()
+    handleRegister();
   } else {
-    handleLogin()
+    handleLogin();
   }
-}
+};
 
 const toggleMode = () => {
-  isRegisterMode.value = !isRegisterMode.value
-  form.value = { username: '', password: '' }
-}
+  isRegisterMode.value = !isRegisterMode.value;
+  form.value = { username: "", password: "" };
+};
 </script>
 
 <style scoped>
@@ -181,13 +185,13 @@ const toggleMode = () => {
 }
 
 .brand-title {
-  font-family: 'Noto Serif SC', serif;
+  font-family: "Noto Serif SC", serif;
   font-size: 3rem;
   font-weight: 700;
   color: #5d4037;
   letter-spacing: 2px;
   margin-bottom: 8px;
-  text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
+  text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
 }
 
 .brand-subtitle {
@@ -202,10 +206,8 @@ const toggleMode = () => {
   width: 100%;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.05), 
-    0 2px 4px -1px rgba(0, 0, 0, 0.03),
-    0 20px 25px -5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03), 0 20px 25px -5px rgba(0, 0, 0, 0.05);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
@@ -256,4 +258,3 @@ const toggleMode = () => {
   opacity: 0.6;
 }
 </style>
-

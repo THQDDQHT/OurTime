@@ -42,10 +42,15 @@
           </div>
         </div>
       </n-layout-header>
-      
+
       <n-layout-content class="content" :native-scrollbar="false">
         <div class="main-wrapper">
-          <n-tabs v-model:value="activeTab" type="segment" animated class="custom-tabs">
+          <n-tabs
+            v-model:value="activeTab"
+            type="segment"
+            animated
+            class="custom-tabs"
+          >
             <n-tab-pane name="timeline" tab="时间轴">
               <div class="timeline-container">
                 <n-spin :show="loading">
@@ -59,15 +64,23 @@
                       <template #icon>
                         <div class="timeline-dot"></div>
                       </template>
-                      <moment-card :moment="moment" @deleted="handleMomentDeleted" />
+                      <moment-card
+                        :moment="moment"
+                        @deleted="handleMomentDeleted"
+                      />
                     </n-timeline-item>
                   </n-timeline>
                   <div v-else class="empty-state">
                     <n-empty description="时光静好，只待记录" />
-                    <n-button class="create-btn" type="primary" @click="handleCreate">记录此刻</n-button>
+                    <n-button
+                      class="create-btn"
+                      type="primary"
+                      @click="handleCreate"
+                      >记录此刻</n-button
+                    >
                   </div>
                 </n-spin>
-                
+
                 <div v-if="hasMore" class="load-more">
                   <n-button text @click="loadMore" :loading="loading">
                     <template #icon>
@@ -78,7 +91,7 @@
                 </div>
               </div>
             </n-tab-pane>
-            
+
             <n-tab-pane name="photowall" tab="照片墙">
               <div class="photowall-container">
                 <n-spin :show="loading">
@@ -104,7 +117,7 @@
                   </div>
                   <n-empty v-else description="相册空空如也" />
                 </n-spin>
-                
+
                 <div v-if="hasMore && allPhotos.length > 0" class="load-more">
                   <n-button text @click="loadMore" :loading="loading">
                     <template #icon>
@@ -119,118 +132,139 @@
         </div>
       </n-layout-content>
     </n-layout>
-    <CreateMomentModal v-model:show="showCreateModal" @success="handleCreateSuccess" />
+    <CreateMomentModal
+      v-model:show="showCreateModal"
+      @success="handleCreateSuccess"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useMessage } from 'naive-ui'
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useMessage } from "naive-ui";
 import {
-  NLayout, NLayoutHeader, NLayoutContent, NTabs, NTabPane, NTimeline, NTimelineItem,
-  NSpin, NEmpty, NButton, NText, NImage, NIcon, NTooltip, NImageGroup
-} from 'naive-ui'
-import { AddOutline, ImagesOutline, LogOutOutline, ReloadOutline } from '@vicons/ionicons5'
-import { getMoments } from '@/api/moment'
-import { useAuthStore } from '@/stores/auth'
-import MomentCard from '@/components/MomentCard.vue'
-import CreateMomentModal from '@/components/CreateMomentModal.vue'
-import type { MomentResponse, PhotoResponse } from '@/api/types'
-import { resolveUploadUrl } from '@/utils/url'
+  NLayout,
+  NLayoutHeader,
+  NLayoutContent,
+  NTabs,
+  NTabPane,
+  NTimeline,
+  NTimelineItem,
+  NSpin,
+  NEmpty,
+  NButton,
+  NText,
+  NImage,
+  NIcon,
+  NTooltip,
+  NImageGroup,
+} from "naive-ui";
+import {
+  AddOutline,
+  ImagesOutline,
+  LogOutOutline,
+  ReloadOutline,
+} from "@vicons/ionicons5";
+import { getMoments } from "@/api/moment";
+import { useAuthStore } from "@/stores/auth";
+import MomentCard from "@/components/MomentCard.vue";
+import CreateMomentModal from "@/components/CreateMomentModal.vue";
+import type { MomentResponse, PhotoResponse } from "@/api/types";
+import { resolveUploadUrl } from "@/utils/url";
 
-const router = useRouter()
-const message = useMessage()
-const authStore = useAuthStore()
+const router = useRouter();
+const message = useMessage();
+const authStore = useAuthStore();
 
-const activeTab = ref('timeline')
-const loading = ref(false)
-const showCreateModal = ref(false)
-const moments = ref<MomentResponse[]>([])
-const page = ref(0)
-const size = ref(20)
-const hasMore = ref(true)
+const activeTab = ref("timeline");
+const loading = ref(false);
+const showCreateModal = ref(false);
+const moments = ref<MomentResponse[]>([]);
+const page = ref(0);
+const size = ref(20);
+const hasMore = ref(true);
 
 const allPhotos = computed(() => {
-  const photos: Array<PhotoResponse & { id: number }> = []
-  moments.value.forEach(moment => {
+  const photos: Array<PhotoResponse & { id: number }> = [];
+  moments.value.forEach((moment) => {
     if (moment.photos && moment.photos.length > 0) {
-      moment.photos.forEach(photo => {
+      moment.photos.forEach((photo) => {
         if (photo.filePath) {
-          photos.push({ ...photo, id: photo.id || Math.random() })
+          photos.push({ ...photo, id: photo.id || Math.random() });
         }
-      })
+      });
     }
-  })
-  return photos
-})
+  });
+  return photos;
+});
 
 const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
+  const date = new Date(dateStr);
+  return date.toLocaleString("zh-CN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
 const loadMoments = async (reset = false) => {
-  if (loading.value) return
-  
+  if (loading.value) return;
+
   try {
-    loading.value = true
-    const currentPage = reset ? 0 : page.value
-    const response = await getMoments(currentPage, size.value)
-    
+    loading.value = true;
+    const currentPage = reset ? 0 : page.value;
+    const response = await getMoments(currentPage, size.value);
+
     if (reset) {
-      moments.value = response.content
+      moments.value = response.content;
     } else {
-      moments.value.push(...response.content)
+      moments.value.push(...response.content);
     }
-    
-    page.value = response.number + 1
-    hasMore.value = !response.last
-    
+
+    page.value = response.number + 1;
+    hasMore.value = !response.last;
+
     if (reset && response.content.length === 0) {
       // message.info('还没有瞬间，去发布第一条吧！')
     }
   } catch (error: any) {
-    message.error(error.message || '加载失败')
+    message.error(error.message || "加载失败");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const loadMore = () => {
-  loadMoments(false)
-}
+  loadMoments(false);
+};
 
 const handleMomentDeleted = (id: number) => {
-  moments.value = moments.value.filter(m => m.id !== id)
-}
+  moments.value = moments.value.filter((m) => m.id !== id);
+};
 
 const handleCreate = () => {
-  showCreateModal.value = true
-}
+  showCreateModal.value = true;
+};
 
 const handleCreateSuccess = () => {
-  loadMoments(true)
-}
+  loadMoments(true);
+};
 
 const handleAlbums = () => {
-  router.push('/albums')
-}
+  router.push("/albums");
+};
 
 const handleLogout = () => {
-  authStore.logout()
-  router.push('/login')
-}
+  authStore.logout();
+  router.push("/login");
+};
 
 onMounted(() => {
-  loadMoments(true)
-})
+  loadMoments(true);
+});
 </script>
 
 <style scoped>
@@ -252,7 +286,7 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .header-content {
@@ -265,7 +299,7 @@ onMounted(() => {
 }
 
 .brand-text {
-  font-family: 'Noto Serif SC', serif;
+  font-family: "Noto Serif SC", serif;
   font-size: 24px;
   font-weight: 700;
   color: #5d4037;
@@ -373,4 +407,3 @@ onMounted(() => {
   width: 100%;
 }
 </style>
-

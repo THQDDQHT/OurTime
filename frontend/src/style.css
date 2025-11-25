@@ -1,4 +1,4 @@
-/* Import a Google Font if available or fallback to system serif */
+
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
 
 @tailwind base;
