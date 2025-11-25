@@ -16,6 +16,9 @@ public class Music {
     private String url;      // 音乐文件路径
 
     private String coverUrl; // 封面路径
+    
+    @Column(name = "user_id")
+    private Long userId;
 
     private LocalDateTime createdAt;
 

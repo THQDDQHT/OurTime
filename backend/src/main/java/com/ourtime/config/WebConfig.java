@@ -17,22 +17,22 @@ import java.nio.file.Paths;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    
+
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Value("${app.upload-path}")
     private String uploadPath;
-    
+
     @Bean
     public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilter() {
         FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(jwtAuthenticationFilter);
-        registration.addUrlPatterns("/api/v1/*");
+        registration.addUrlPatterns("/api/v1/*", "/v1/*");
         registration.setOrder(1);
         return registration;
     }
-    
+
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -53,4 +53,3 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations(uploadUrl);
     }
 }
-

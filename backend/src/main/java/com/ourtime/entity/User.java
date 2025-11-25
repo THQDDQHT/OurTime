@@ -6,41 +6,42 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "albums")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Album {
+public class User {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(nullable = false, unique = true, length = 50)
+    private String username;
+    
     @Column(nullable = false)
-    private String name;
+    private String password;
     
-    @Column(columnDefinition = "TEXT")
-    private String description;
-    
-    @Column(name = "cover_url")
-    private String coverUrl;
-    
-    @Column(name = "user_id")
-    private Long userId;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private UserRole role;
     
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
-    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Moment> moments = new ArrayList<>();
-    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (role == null) {
+            role = UserRole.USER;
+        }
+    }
+    
+    public enum UserRole {
+        ADMIN,
+        USER
     }
 }
 

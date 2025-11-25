@@ -22,13 +22,14 @@ public class MomentService {
     private MomentRepository momentRepository;
     
     @Transactional
-    public MomentResponse createMoment(MomentRequest request) {
+    public MomentResponse createMoment(MomentRequest request, Long userId) {
         Moment moment = new Moment();
         moment.setContent(request.getContent());
         moment.setHappenedAt(request.getHappenedAt() != null ? 
             request.getHappenedAt() : java.time.LocalDateTime.now());
         moment.setLocation(request.getLocation());
         moment.setAlbumId(request.getAlbumId());
+        moment.setUserId(userId);
         
         // 处理照片
         if (request.getPhotos() != null) {
@@ -48,21 +49,38 @@ public class MomentService {
         return toResponse(moment);
     }
     
-    public Page<MomentResponse> getMoments(Pageable pageable) {
-        return momentRepository.findAllByOrderByHappenedAtDesc(pageable)
-                .map(this::toResponse);
+    public Page<MomentResponse> getMoments(Pageable pageable, Long userId, String role) {
+        if ("ADMIN".equals(role)) {
+            return momentRepository.findAllByOrderByHappenedAtDesc(pageable)
+                    .map(this::toResponse);
+        } else {
+            return momentRepository.findByUserIdOrderByHappenedAtDesc(userId, pageable)
+                    .map(this::toResponse);
+        }
     }
     
-    public MomentResponse getMomentById(Long id) {
-        Moment moment = momentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("瞬间不存在"));
+    public MomentResponse getMomentById(Long id, Long userId, String role) {
+        Moment moment;
+        if ("ADMIN".equals(role)) {
+            moment = momentRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("瞬间不存在"));
+        } else {
+            moment = momentRepository.findByIdAndUserId(id, userId)
+                    .orElseThrow(() -> new RuntimeException("瞬间不存在或无权访问"));
+        }
         return toResponse(moment);
     }
     
     @Transactional
-    public void deleteMoment(Long id) {
-        if (!momentRepository.existsById(id)) {
-            throw new RuntimeException("瞬间不存在");
+    public void deleteMoment(Long id, Long userId, String role) {
+        if ("ADMIN".equals(role)) {
+            if (!momentRepository.existsById(id)) {
+                throw new RuntimeException("瞬间不存在");
+            }
+        } else {
+            if (!momentRepository.findByIdAndUserId(id, userId).isPresent()) {
+                throw new RuntimeException("瞬间不存在或无权访问");
+            }
         }
         momentRepository.deleteById(id);
     }

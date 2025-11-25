@@ -4,6 +4,7 @@ import com.ourtime.dto.ApiResponse;
 import com.ourtime.dto.MomentRequest;
 import com.ourtime.dto.MomentResponse;
 import com.ourtime.service.MomentService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,29 +20,38 @@ public class MomentController {
     private MomentService momentService;
     
     @PostMapping
-    public ApiResponse<MomentResponse> createMoment(@Valid @RequestBody MomentRequest request) {
-        MomentResponse response = momentService.createMoment(request);
+    public ApiResponse<MomentResponse> createMoment(@Valid @RequestBody MomentRequest request,
+                                                     HttpServletRequest httpRequest) {
+        Long userId = (Long) httpRequest.getAttribute("userId");
+        MomentResponse response = momentService.createMoment(request, userId);
         return ApiResponse.success(response);
     }
     
     @GetMapping
     public ApiResponse<Page<MomentResponse>> getMoments(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "20") int size,
+            HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        String role = (String) request.getAttribute("role");
         Pageable pageable = PageRequest.of(page, size);
-        Page<MomentResponse> moments = momentService.getMoments(pageable);
+        Page<MomentResponse> moments = momentService.getMoments(pageable, userId, role);
         return ApiResponse.success(moments);
     }
     
     @GetMapping("/{id}")
-    public ApiResponse<MomentResponse> getMomentById(@PathVariable Long id) {
-        MomentResponse response = momentService.getMomentById(id);
+    public ApiResponse<MomentResponse> getMomentById(@PathVariable Long id, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        String role = (String) request.getAttribute("role");
+        MomentResponse response = momentService.getMomentById(id, userId, role);
         return ApiResponse.success(response);
     }
     
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteMoment(@PathVariable Long id) {
-        momentService.deleteMoment(id);
+    public ApiResponse<Void> deleteMoment(@PathVariable Long id, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        String role = (String) request.getAttribute("role");
+        momentService.deleteMoment(id, userId, role);
         return ApiResponse.success(null);
     }
 }

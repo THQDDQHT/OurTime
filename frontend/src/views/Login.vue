@@ -8,18 +8,32 @@
       
       <n-card class="login-card" :bordered="false" size="huge">
         <div class="card-header">
-          <n-text class="card-title">开启记忆之门</n-text>
+          <n-text class="card-title">{{ isRegisterMode ? '创建新账号' : '开启记忆之门' }}</n-text>
         </div>
         
         <n-form ref="formRef" :model="form" :rules="rules" size="large">
-          <n-form-item path="secret" :show-label="false">
+          <n-form-item path="username" :show-label="false">
             <n-input
-              v-model:value="form.secret"
-              type="password"
-              placeholder="请输入开启密码"
+              v-model:value="form.username"
+              placeholder="请输入用户名"
               :disabled="loading"
-              @keyup.enter="handleLogin"
-              class="secret-input"
+              @keyup.enter="handleSubmit"
+              class="form-input"
+            >
+              <template #prefix>
+                <span class="input-icon">👤</span>
+              </template>
+            </n-input>
+          </n-form-item>
+          
+          <n-form-item path="password" :show-label="false">
+            <n-input
+              v-model:value="form.password"
+              type="password"
+              placeholder="请输入密码"
+              :disabled="loading"
+              @keyup.enter="handleSubmit"
+              class="form-input"
             >
               <template #prefix>
                 <span class="input-icon">🔑</span>
@@ -34,11 +48,17 @@
             block
             size="large"
             :loading="loading"
-            @click="handleLogin"
+            @click="handleSubmit"
             class="login-btn"
           >
-            进入
+            {{ isRegisterMode ? '注册' : '登录' }}
           </n-button>
+          
+          <div class="toggle-mode">
+            <n-button text @click="toggleMode" :disabled="loading">
+              {{ isRegisterMode ? '已有账号？去登录' : '没有账号？去注册' }}
+            </n-button>
+          </div>
         </div>
       </n-card>
       
@@ -54,7 +74,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMessage } from 'naive-ui'
 import { NCard, NForm, NFormItem, NInput, NButton, NText } from 'naive-ui'
-import { login } from '@/api/auth'
+import { login, register } from '@/api/auth'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -63,14 +83,21 @@ const authStore = useAuthStore()
 
 const formRef = ref()
 const loading = ref(false)
+const isRegisterMode = ref(false)
 const form = ref({
-  secret: ''
+  username: '',
+  password: ''
 })
 
 const rules = {
-  secret: {
+  username: {
     required: true,
-    message: '请输入开启密码',
+    message: '请输入用户名',
+    trigger: 'blur'
+  },
+  password: {
+    required: true,
+    message: '请输入密码',
     trigger: 'blur'
   }
 }
@@ -80,15 +107,50 @@ const handleLogin = async () => {
     await formRef.value?.validate()
     loading.value = true
     
-    const response = await login({ secret: form.value.secret })
-    authStore.setToken(response.token)
+    const response = await login({ 
+      username: form.value.username, 
+      password: form.value.password 
+    })
+    authStore.setAuth(response)
     message.success('欢迎回来，时光旅人')
     router.push('/')
   } catch (error: any) {
-    message.error(error.message || '密钥错误，请重试')
+    message.error(error.message || '登录失败，请重试')
   } finally {
     loading.value = false
   }
+}
+
+const handleRegister = async () => {
+  try {
+    await formRef.value?.validate()
+    loading.value = true
+    
+    const response = await register({ 
+      username: form.value.username, 
+      password: form.value.password 
+    })
+    authStore.setAuth(response)
+    message.success('注册成功，欢迎加入')
+    router.push('/')
+  } catch (error: any) {
+    message.error(error.message || '注册失败，请重试')
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleSubmit = () => {
+  if (isRegisterMode.value) {
+    handleRegister()
+  } else {
+    handleLogin()
+  }
+}
+
+const toggleMode = () => {
+  isRegisterMode.value = !isRegisterMode.value
+  form.value = { username: '', password: '' }
 }
 </script>
 
@@ -159,10 +221,8 @@ const handleLogin = async () => {
   font-weight: 500;
 }
 
-.secret-input {
-  text-align: center;
-  font-size: 1.1rem;
-  letter-spacing: 2px;
+.form-input {
+  font-size: 1rem;
 }
 
 .input-icon {
@@ -171,6 +231,14 @@ const handleLogin = async () => {
 
 .actions {
   margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toggle-mode {
+  text-align: center;
+  margin-top: 8px;
 }
 
 .login-btn {

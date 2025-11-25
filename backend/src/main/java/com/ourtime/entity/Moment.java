@@ -28,6 +28,9 @@ public class Moment {
     
     private String location;
     
+    @Column(name = "user_id")
+    private Long userId;
+    
     @Column(name = "album_id")
     private Long albumId;
     

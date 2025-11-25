@@ -32,12 +32,14 @@ public class JwtUtil {
         }
     }
     
-    public String generateToken() {
+    public String generateToken(Long userId, String username, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
         
         return Jwts.builder()
-                .subject("ourtime")
+                .subject(username)
+                .claim("userId", userId)
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
@@ -59,6 +61,26 @@ public class JwtUtil {
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    public Long getUserIdFromToken(String token) {
+        Claims claims = parseToken(token);
+        // 安全地处理数字类型转换
+        Object userId = claims.get("userId");
+        if (userId instanceof Integer) {
+            return ((Integer) userId).longValue();
+        }
+        return claims.get("userId", Long.class);
+    }
+    
+    public String getRoleFromToken(String token) {
+        Claims claims = parseToken(token);
+        return claims.get("role", String.class);
+    }
+    
+    public String getUsernameFromToken(String token) {
+        Claims claims = parseToken(token);
+        return claims.getSubject();
     }
 }
 

@@ -17,33 +17,52 @@ public class AlbumService {
     @Autowired
     private AlbumRepository albumRepository;
     
-    public List<AlbumResponse> getAllAlbums() {
-        return albumRepository.findAll().stream()
+    public List<AlbumResponse> getAllAlbums(Long userId, String role) {
+        List<Album> albums;
+        if ("ADMIN".equals(role)) {
+            albums = albumRepository.findAll();
+        } else {
+            albums = albumRepository.findByUserId(userId);
+        }
+        return albums.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
     
-    public AlbumResponse getAlbumById(Long id) {
-        Album album = albumRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("相册不存在"));
+    public AlbumResponse getAlbumById(Long id, Long userId, String role) {
+        Album album;
+        if ("ADMIN".equals(role)) {
+            album = albumRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("相册不存在"));
+        } else {
+            album = albumRepository.findByIdAndUserId(id, userId)
+                    .orElseThrow(() -> new RuntimeException("相册不存在或无权访问"));
+        }
         return toResponse(album);
     }
     
     @Transactional
-    public AlbumResponse createAlbum(AlbumRequest request) {
+    public AlbumResponse createAlbum(AlbumRequest request, Long userId) {
         Album album = new Album();
         album.setName(request.getName());
         album.setDescription(request.getDescription());
         album.setCoverUrl(request.getCoverUrl());
+        album.setUserId(userId);
         
         album = albumRepository.save(album);
         return toResponse(album);
     }
     
     @Transactional
-    public AlbumResponse updateAlbum(Long id, AlbumRequest request) {
-        Album album = albumRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("相册不存在"));
+    public AlbumResponse updateAlbum(Long id, AlbumRequest request, Long userId, String role) {
+        Album album;
+        if ("ADMIN".equals(role)) {
+            album = albumRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("相册不存在"));
+        } else {
+            album = albumRepository.findByIdAndUserId(id, userId)
+                    .orElseThrow(() -> new RuntimeException("相册不存在或无权访问"));
+        }
         
         if (request.getName() != null) {
             album.setName(request.getName());
@@ -60,9 +79,15 @@ public class AlbumService {
     }
     
     @Transactional
-    public void deleteAlbum(Long id) {
-        if (!albumRepository.existsById(id)) {
-            throw new RuntimeException("相册不存在");
+    public void deleteAlbum(Long id, Long userId, String role) {
+        if ("ADMIN".equals(role)) {
+            if (!albumRepository.existsById(id)) {
+                throw new RuntimeException("相册不存在");
+            }
+        } else {
+            if (!albumRepository.findByIdAndUserId(id, userId).isPresent()) {
+                throw new RuntimeException("相册不存在或无权访问");
+            }
         }
         albumRepository.deleteById(id);
     }
