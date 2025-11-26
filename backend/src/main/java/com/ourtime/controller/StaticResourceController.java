@@ -1,5 +1,6 @@
 package com.ourtime.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/uploads")
 public class StaticResourceController {
@@ -46,11 +48,13 @@ public class StaticResourceController {
             
             // 安全检查：确保文件在上传目录内
             if (!filePath.startsWith(uploadDir)) {
+                log.warn("Potential path traversal attempt: filename={}, resolvedPath={}", filename, filePath);
                 return ResponseEntity.badRequest().build();
             }
             
             // 检查文件是否存在
             if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+                log.warn("File not found: {}", filePath);
                 return ResponseEntity.notFound().build();
             }
             
@@ -70,6 +74,7 @@ public class StaticResourceController {
                     .body(resource);
                     
         } catch (Exception e) {
+            log.error("Error serving file: {}", filename, e);
             return ResponseEntity.internalServerError().build();
         }
     }

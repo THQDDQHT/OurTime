@@ -5,12 +5,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -24,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        System.out.println("DEBUG: Filter执行 - path: " + path);
+        log.debug("Filter executing - path: {}", path);
 
         // 允许的路径（无需认证）
         if (path.startsWith("/api/v1/auth/login") || path.startsWith("/v1/auth/login") ||
@@ -38,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 检查 Authorization Header
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("DEBUG: Header为空或格式错误");
+            log.debug("Header empty or format incorrect");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"code\":401,\"message\":\"未授权，请先登录\"}");
@@ -48,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
         try {
             if (!jwtUtil.validateToken(token)) {
-                System.out.println("DEBUG: Token验证失败");
+                log.debug("Token validation failed");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().write("{\"code\":401,\"message\":\"Token 无效或已过期\"}");
@@ -60,15 +62,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String role = jwtUtil.getRoleFromToken(token);
             String username = jwtUtil.getUsernameFromToken(token);
 
-            System.out.println("DEBUG: Token解析成功 - userId: " + userId + ", role: " + role + ", username: " + username);
+            log.debug("Token parsed successfully - userId: {}, role: {}, username: {}", userId, role, username);
 
             request.setAttribute("userId", userId);
             request.setAttribute("role", role);
             request.setAttribute("username", username);
 
         } catch (Throwable e) {
-            System.out.println("DEBUG: Token处理发生严重错误: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Severe error during token processing: {}", e.getMessage(), e);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"code\":401,\"message\":\"认证服务异常: " + e.getMessage() + "\"}");

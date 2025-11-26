@@ -6,11 +6,13 @@ import com.ourtime.dto.ApiResponse;
 import com.ourtime.service.AlbumService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/albums")
 public class AlbumController {
@@ -22,9 +24,9 @@ public class AlbumController {
     public ApiResponse<List<AlbumResponse>> getAllAlbums(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
         String role = (String) request.getAttribute("role");
-        System.out.println("DEBUG: GetAllAlbums请求 - userId: " + userId + ", role: " + role);
+        log.debug("GetAllAlbums request - userId: {}, role: {}", userId, role);
         List<AlbumResponse> albums = albumService.getAllAlbums(userId, role);
-        System.out.println("DEBUG: 查询结果数量: " + albums.size());
+        log.debug("Query result size: {}", albums.size());
         return ApiResponse.success(albums);
     }
     

@@ -4,6 +4,7 @@ import com.ourtime.dto.AlbumRequest;
 import com.ourtime.dto.AlbumResponse;
 import com.ourtime.entity.Album;
 import com.ourtime.repository.AlbumRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class AlbumService {
     
@@ -18,6 +20,7 @@ public class AlbumService {
     private AlbumRepository albumRepository;
     
     public List<AlbumResponse> getAllAlbums(Long userId, String role) {
+        // ... existing code ...
         List<Album> albums;
         if ("ADMIN".equals(role)) {
             albums = albumRepository.findAll();
@@ -33,16 +36,23 @@ public class AlbumService {
         Album album;
         if ("ADMIN".equals(role)) {
             album = albumRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("相册不存在"));
+                    .orElseThrow(() -> {
+                        log.warn("Album not found: id={}", id);
+                        return new RuntimeException("相册不存在");
+                    });
         } else {
             album = albumRepository.findByIdAndUserId(id, userId)
-                    .orElseThrow(() -> new RuntimeException("相册不存在或无权访问"));
+                    .orElseThrow(() -> {
+                        log.warn("Album not found or access denied: id={}, userId={}", id, userId);
+                        return new RuntimeException("相册不存在或无权访问");
+                    });
         }
         return toResponse(album);
     }
     
     @Transactional
     public AlbumResponse createAlbum(AlbumRequest request, Long userId) {
+        log.info("Creating album: name={}, userId={}", request.getName(), userId);
         Album album = new Album();
         album.setName(request.getName());
         album.setDescription(request.getDescription());
@@ -50,18 +60,26 @@ public class AlbumService {
         album.setUserId(userId);
         
         album = albumRepository.save(album);
+        log.info("Album created: id={}", album.getId());
         return toResponse(album);
     }
     
     @Transactional
     public AlbumResponse updateAlbum(Long id, AlbumRequest request, Long userId, String role) {
+        log.info("Updating album: id={}, userId={}", id, userId);
         Album album;
         if ("ADMIN".equals(role)) {
             album = albumRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("相册不存在"));
+                    .orElseThrow(() -> {
+                        log.warn("Album not found for update: id={}", id);
+                        return new RuntimeException("相册不存在");
+                    });
         } else {
             album = albumRepository.findByIdAndUserId(id, userId)
-                    .orElseThrow(() -> new RuntimeException("相册不存在或无权访问"));
+                    .orElseThrow(() -> {
+                        log.warn("Album not found or access denied for update: id={}, userId={}", id, userId);
+                        return new RuntimeException("相册不存在或无权访问");
+                    });
         }
         
         if (request.getName() != null) {
@@ -75,21 +93,26 @@ public class AlbumService {
         }
         
         album = albumRepository.save(album);
+        log.info("Album updated: id={}", album.getId());
         return toResponse(album);
     }
     
     @Transactional
     public void deleteAlbum(Long id, Long userId, String role) {
+        log.info("Deleting album: id={}, userId={}, role={}", id, userId, role);
         if ("ADMIN".equals(role)) {
             if (!albumRepository.existsById(id)) {
+                log.warn("Album not found for delete: id={}", id);
                 throw new RuntimeException("相册不存在");
             }
         } else {
             if (!albumRepository.findByIdAndUserId(id, userId).isPresent()) {
+                log.warn("Album not found or access denied for delete: id={}, userId={}", id, userId);
                 throw new RuntimeException("相册不存在或无权访问");
             }
         }
         albumRepository.deleteById(id);
+        log.info("Album deleted: id={}", id);
     }
     
     private AlbumResponse toResponse(Album album) {

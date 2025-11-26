@@ -7,6 +7,7 @@ import com.ourtime.dto.PhotoResponse;
 import com.ourtime.entity.Moment;
 import com.ourtime.entity.Photo;
 import com.ourtime.repository.MomentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class MomentService {
     
@@ -23,6 +25,9 @@ public class MomentService {
     
     @Transactional
     public MomentResponse createMoment(MomentRequest request, Long userId) {
+        int photoCount = request.getPhotos() != null ? request.getPhotos().size() : 0;
+        log.info("Creating moment: userId={}, photoCount={}, location={}", userId, photoCount, request.getLocation());
+        
         Moment moment = new Moment();
         moment.setContent(request.getContent());
         moment.setHappenedAt(request.getHappenedAt() != null ? 
@@ -45,11 +50,13 @@ public class MomentService {
         }
         
         moment = momentRepository.save(moment);
+        log.info("Moment created: id={}", moment.getId());
         
         return toResponse(moment);
     }
     
     public Page<MomentResponse> getMoments(Pageable pageable, Long userId, String role, Long albumId) {
+        // ... existing logic ...
         if ("ADMIN".equals(role)) {
             if (albumId != null) {
                 return momentRepository.findByAlbumIdOrderByHappenedAtDesc(albumId, pageable)
@@ -71,26 +78,36 @@ public class MomentService {
         Moment moment;
         if ("ADMIN".equals(role)) {
             moment = momentRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("瞬间不存在"));
+                    .orElseThrow(() -> {
+                        log.warn("Moment not found: id={}", id);
+                        return new RuntimeException("瞬间不存在");
+                    });
         } else {
             moment = momentRepository.findByIdAndUserId(id, userId)
-                    .orElseThrow(() -> new RuntimeException("瞬间不存在或无权访问"));
+                    .orElseThrow(() -> {
+                        log.warn("Moment not found or access denied: id={}, userId={}", id, userId);
+                        return new RuntimeException("瞬间不存在或无权访问");
+                    });
         }
         return toResponse(moment);
     }
     
     @Transactional
     public void deleteMoment(Long id, Long userId, String role) {
+        log.info("Deleting moment: id={}, userId={}, role={}", id, userId, role);
         if ("ADMIN".equals(role)) {
             if (!momentRepository.existsById(id)) {
+                log.warn("Moment not found for delete: id={}", id);
                 throw new RuntimeException("瞬间不存在");
             }
         } else {
             if (!momentRepository.findByIdAndUserId(id, userId).isPresent()) {
+                log.warn("Moment not found or access denied for delete: id={}, userId={}", id, userId);
                 throw new RuntimeException("瞬间不存在或无权访问");
             }
         }
         momentRepository.deleteById(id);
+        log.info("Moment deleted: id={}", id);
     }
     
     private MomentResponse toResponse(Moment moment) {

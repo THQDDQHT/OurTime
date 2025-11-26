@@ -2,6 +2,7 @@ package com.ourtime.service;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+@Slf4j
 @Service
 public class FileUploadService {
     
@@ -46,13 +48,16 @@ public class FileUploadService {
             // 构建完整路径
             path = basePath.resolve(uploadPath);
         }
-        return path.toAbsolutePath().normalize();
+        Path absPath = path.toAbsolutePath().normalize();
+        log.debug("Upload directory resolved to: {}", absPath);
+        return absPath;
     }
     
     public String saveFile(MultipartFile file) throws IOException {
         // 确保上传目录存在
         Path uploadDir = getUploadDirectory();
         if (!Files.exists(uploadDir)) {
+            log.info("Creating upload directory: {}", uploadDir);
             Files.createDirectories(uploadDir);
         }
         
@@ -66,7 +71,15 @@ public class FileUploadService {
         
         // 保存文件 - 使用 Files.copy 更可靠
         Path filePath = uploadDir.resolve(newFilename);
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        log.info("Saving file: {} -> {}", originalFilename, filePath);
+        
+        try {
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            log.debug("File saved successfully: {}", filePath);
+        } catch (IOException e) {
+            log.error("Failed to save file: {}", filePath, e);
+            throw e;
+        }
         
         // 返回API路径（通过Controller访问）
         return "/api/v1/uploads/" + newFilename;
