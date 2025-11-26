@@ -6,7 +6,7 @@
 
     <div class="login-content">
       <div class="brand-area">
-        <h1 class="brand-title">OurTime</h1>
+        <h1 class="brand-title">NEURAL</h1>
         <p class="brand-subtitle">时空终端 // 需要访问权限</p>
       </div>
 

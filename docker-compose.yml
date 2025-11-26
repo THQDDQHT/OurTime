@@ -1,29 +1,29 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # 1. 数据库
   db:
     image: postgres:15-alpine
-    container_name: ourtime_db
+    container_name: neural_db
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: ourtime_db
+      POSTGRES_DB: neural_db
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     networks:
-      - ot_net
+      - neural_net
 
   # 2. Java 后端
   backend:
     build: ./backend
-    container_name: ourtime_api
+    container_name: neural_api
     restart: always
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ourtime_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/neural_db
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
       APP_UPLOAD_PATH: /app/uploads
@@ -32,12 +32,12 @@ services:
     volumes:
       - ./data/uploads:/app/uploads
     networks:
-      - ot_net
+      - neural_net
 
   # 3. Nginx 网关
   nginx:
     image: nginx:alpine
-    container_name: ourtime_gateway
+    container_name: neural_gateway
     restart: always
     ports:
       - "80:80"
@@ -48,8 +48,7 @@ services:
     depends_on:
       - backend
     networks:
-      - ot_net
+      - neural_net
 
 networks:
-  ot_net:
-
+  neural_net:

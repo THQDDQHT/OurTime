@@ -11,11 +11,11 @@
         <relativePath />
     </parent>
 
-    <groupId>com.ourtime</groupId>
-    <artifactId>ourtime-backend</artifactId>
+    <groupId>com.neural</groupId>
+    <artifactId>neural-backend</artifactId>
     <version>1.0.0</version>
-    <name>OurTime Backend</name>
-    <description>时光博物馆后端服务</description>
+    <name>Neural Backend</name>
+    <description>后端服务</description>
 
     <properties>
         <java.version>21</java.version>
