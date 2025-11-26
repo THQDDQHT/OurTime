@@ -30,6 +30,12 @@ const routes: RouteRecordRaw[] = [
     name: 'AlbumDetail',
     component: () => import('@/views/AlbumDetail.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/timeline',
+    name: 'Timeline',
+    component: () => import('@/views/Timeline.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

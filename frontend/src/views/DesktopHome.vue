@@ -8,16 +8,6 @@
 
     <!-- 顶部状态栏 -->
     <div class="status-bar">
-      <div class="status-item">
-        <span class="status-label">USER:</span>
-        <span class="status-value">{{
-          authStore.user?.username || "GUEST"
-        }}</span>
-      </div>
-      <div class="status-item">
-        <span class="status-label">NET:</span>
-        <span class="status-value connected">ONLINE</span>
-      </div>
       <div class="logout-trigger" @click="handleLogout">
         <div class="icon-power"></div>
         <span>断开连接</span>
@@ -34,6 +24,19 @@
         </div>
         <div class="panel-content album-list-wrapper">
           <DesktopMemoryHelix @open-archive="showAlbumModal = true" />
+          <div class="archive-action">
+            <n-button
+              class="cyber-archive-btn"
+              ghost
+              block
+              @click.stop="showAlbumModal = true"
+            >
+              <template #icon>
+                <n-icon><AlbumsOutline /></n-icon>
+              </template>
+             打开档案库
+            </n-button>
+          </div>
         </div>
       </div>
 
@@ -76,11 +79,10 @@
     <!-- 底部指令台 (Bottom Console) -->
     <div class="bottom-console" @click="showCreateModal = true">
       <div class="console-frame">
-        <div class="console-label">INPUT_TERMINAL // 等待指令</div>
         <div class="input-area">
           <span class="prompt">></span>
           <span class="cursor">_</span>
-          <span class="placeholder">点击此处录入新的时空节点数据...</span>
+          <span class="placeholder">  点击此处录入新的时空节点数据...</span>
         </div>
         <div class="console-stats">
           <span>MEM: 64TB</span>
@@ -110,7 +112,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { useMessage, NModal } from "naive-ui";
+import { useMessage, NModal, NButton, NIcon } from "naive-ui";
+import { AlbumsOutline } from "@vicons/ionicons5";
 import { useAuthStore } from "@/stores/auth";
 import DesktopTechPlayer from "@/components/desktop/DesktopTechPlayer.vue";
 import DesktopMemoryHelix from "@/components/desktop/DesktopMemoryHelix.vue";
@@ -200,12 +203,12 @@ onUnmounted(() => {
   height: 200%;
   left: -50%;
   top: -50%;
-  background-image: linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(0, 243, 255, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 243, 255, 0.2) 1px, transparent 1px);
   background-size: 60px 60px;
   transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-100px);
   animation: grid-fly 20s linear infinite;
-  opacity: 0.2;
+  opacity: 0.4;
   pointer-events: none;
   z-index: 0;
 }
@@ -250,9 +253,9 @@ onUnmounted(() => {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, transparent 60%, black 100%);
+  background: radial-gradient(circle, transparent 50%, rgba(0, 0, 0, 0.8) 100%);
   pointer-events: none;
-  z-index: 800;
+  z-index: 5;
 }
 
 /* --- Status Bar --- */
@@ -485,7 +488,6 @@ onUnmounted(() => {
   height: 100%;
   background: var(--panel-bg);
   border: 1px solid rgba(0, 243, 255, 0.3);
-  border-top: 2px solid var(--neon-blue);
   backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
@@ -501,12 +503,14 @@ onUnmounted(() => {
 
 .console-label {
   font-family: "Share Tech Mono";
-  color: rgba(0, 243, 255, 0.5);
-  font-size: 12px;
-  writing-mode: vertical-lr;
-  transform: rotate(180deg);
-  border-left: 1px solid rgba(0, 243, 255, 0.3);
-  padding-left: 5px;
+  color: var(--neon-blue);
+  font-size: 14px;
+  font-weight: bold;
+  border-right: 2px solid rgba(0, 243, 255, 0.5);
+  padding-right: 15px;
+  margin-right: 10px;
+  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
+  white-space: nowrap;
 }
 
 .input-area {
@@ -563,5 +567,62 @@ onUnmounted(() => {
   50% {
     opacity: 0;
   }
+}
+
+.archive-action {
+  margin-top: auto;
+  width: 100%;
+  padding-top: 15px;
+  border-top: 1px solid rgba(0, 243, 255, 0.1);
+}
+
+.cyber-archive-btn {
+  --n-text-color: #00f3ff !important;
+  --n-text-color-hover: #00f3ff !important;
+  --n-text-color-pressed: #00f3ff !important;
+  --n-text-color-focus: #00f3ff !important;
+  --n-icon-color: #00f3ff !important;
+  --n-icon-color-hover: #00f3ff !important;
+  --n-icon-color-pressed: #00f3ff !important;
+  --n-icon-color-focus: #00f3ff !important;
+  --n-border-color: rgba(0, 243, 255, 0.3);
+  --n-border-color-hover: #00f3ff;
+  --n-border-color-pressed: #00f3ff;
+  --n-border-color-focus: #00f3ff;
+  
+  font-family: "Share Tech Mono";
+  font-weight: bold;
+  letter-spacing: 1px;
+  background: rgba(0, 243, 255, 0.05);
+  transition: all 0.3s;
+  color: #00f3ff !important;
+}
+
+/* 强制覆盖按钮内部文字和图标颜色 */
+.cyber-archive-btn :deep(.n-button__content) {
+  color: #00f3ff !important;
+}
+
+.cyber-archive-btn :deep(.n-icon) {
+  color: #00f3ff !important;
+}
+
+/* 强力覆盖 Naive UI 的内部边框样式 */
+.cyber-archive-btn :deep(.n-button__border),
+.cyber-archive-btn :deep(.n-button__state-border) {
+  border: 1px solid rgba(0, 243, 255, 0.3) !important;
+}
+
+.cyber-archive-btn:hover :deep(.n-button__border),
+.cyber-archive-btn:hover :deep(.n-button__state-border),
+.cyber-archive-btn:focus :deep(.n-button__border),
+.cyber-archive-btn:focus :deep(.n-button__state-border) {
+  border-color: var(--neon-blue) !important;
+}
+
+.cyber-archive-btn:hover {
+  background: rgba(0, 243, 255, 0.15);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+  text-shadow: 0 0 5px var(--neon-blue);
 }
 </style>
