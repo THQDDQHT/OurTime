@@ -27,7 +27,7 @@ import {
   dateZhCN,
   type GlobalThemeOverrides,
 } from "naive-ui";
-import MusicPlayer from "@/components/MusicPlayer.vue";
+// import MusicPlayer from "@/components/MusicPlayer.vue";
 import { useAuthStore } from "@/stores/auth";
 import { computed } from "vue";
 

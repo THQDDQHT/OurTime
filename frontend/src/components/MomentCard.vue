@@ -1,12 +1,12 @@
 <template>
-  <div class="moment-card">
+  <div class="moment-card cyber-glass">
     <div class="card-header">
       <div class="meta-info">
-        <span class="date">{{ formatDate(moment.happenedAt) }}</span>
+        <span class="date">时间戳: {{ formatDate(moment.happenedAt) }}</span>
         <div class="meta-extras">
           <span v-if="moment.location" class="location">
             <n-icon size="12"><location-outline /></n-icon>
-            {{ moment.location }}
+            坐标: {{ moment.location }}
           </span>
           <span
             v-if="moment.albumName"
@@ -14,14 +14,16 @@
             :class="{ clickable: !!moment.albumId }"
             @click.stop="handleAlbumClick"
           >
-            <n-icon size="12"><folder-outline /></n-icon> {{ moment.albumName }}
+            <n-icon size="12"><folder-outline /></n-icon> 索引: {{ moment.albumName }}
           </span>
         </div>
       </div>
+      
       <n-popconfirm
         @positive-click="handleDelete"
-        positive-text="删除"
+        positive-text="确认"
         negative-text="取消"
+        class="cyber-popconfirm"
       >
         <template #trigger>
           <n-button text class="delete-btn">
@@ -30,12 +32,12 @@
             </template>
           </n-button>
         </template>
-        确定要删除这段回忆吗？
+        <span style="font-family: 'Share Tech Mono'">清除此记忆碎片?</span>
       </n-popconfirm>
     </div>
 
     <div v-if="moment.content" class="card-content">
-      <p>{{ moment.content }}</p>
+      <div class="content-text">> {{ moment.content }}</div>
     </div>
 
     <div v-if="moment.photos && moment.photos.length > 0" class="card-photos">
@@ -53,6 +55,7 @@
               preview-disabled
               class="photo-img"
             />
+            <div class="img-overlay"></div>
           </div>
         </div>
       </n-image-group>
@@ -92,13 +95,13 @@ const router = useRouter();
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    weekday: "long",
-  };
-  return date.toLocaleDateString("zh-CN", options);
+  // 格式化为更科技感的日期：2023.12.25 - 14:30:00
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  return `${yyyy}.${mm}.${dd} // ${hh}:${min}`;
 };
 
 const getGridClass = (count: number) => {
@@ -110,7 +113,6 @@ const getGridClass = (count: number) => {
 
 const handleAlbumClick = () => {
   if (props.moment.albumId) {
-    // If we are already on the album detail page, do nothing
     if (router.currentRoute.value.name === 'AlbumDetail' && Number(router.currentRoute.value.params.id) === props.moment.albumId) {
         return;
     }
@@ -121,30 +123,39 @@ const handleAlbumClick = () => {
 const handleDelete = async () => {
   try {
     await deleteMoment(props.moment.id);
-    message.success("回忆已移除");
+    message.success("碎片已清除");
     emit("deleted", props.moment.id);
   } catch (error: any) {
-    message.error(error.message || "删除失败");
+    message.error(error.message || "删除错误");
   }
 };
 </script>
 
 <style scoped>
 .moment-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 32px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05),
-    0 10px 20px -5px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid rgba(0, 0, 0, 0.02);
+  background: rgba(5, 11, 20, 0.6);
+  border: 1px solid rgba(0, 243, 255, 0.15);
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 24px;
   position: relative;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s;
 }
 
 .moment-card:hover {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 15px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.moment-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: var(--neon-blue);
+  opacity: 0.5;
 }
 
 .card-header {
@@ -152,8 +163,8 @@ const handleDelete = async () => {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px dashed #eee;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(0, 243, 255, 0.2);
 }
 
 .meta-info {
@@ -163,100 +174,89 @@ const handleDelete = async () => {
 }
 
 .date {
-  font-family: "Noto Serif SC", serif;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #3e2723;
+  font-family: "Share Tech Mono";
+  font-size: 0.9rem;
+  color: var(--neon-blue);
+  letter-spacing: 1px;
 }
 
 .meta-extras {
   display: flex;
   gap: 12px;
-  font-size: 0.85rem;
-  color: #90a4ae;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  font-family: "Share Tech Mono";
 }
 
-.location,
-.album-tag {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.location, .album-tag {
+  display: flex; align-items: center; gap: 4px;
 }
 
 .album-tag.clickable {
   cursor: pointer;
-  color: #5d4037;
-  transition: color 0.2s, text-decoration-color 0.2s;
+  color: var(--neon-purple);
 }
-
 .album-tag.clickable:hover {
-  color: #3e2723;
   text-decoration: underline;
+  text-shadow: 0 0 5px var(--neon-purple);
 }
 
 .delete-btn {
-  opacity: 0.4;
-  transition: opacity 0.2s;
+  color: rgba(255,255,255,0.3);
 }
-
-.delete-btn:hover {
-  opacity: 1;
-  color: #d32f2f;
-}
+.delete-btn:hover { color: var(--neon-red); text-shadow: 0 0 5px var(--neon-red); }
 
 .card-content {
   margin-bottom: 16px;
-  color: #455a64;
-  line-height: 1.6;
-  font-size: 1rem;
-  white-space: pre-wrap;
+  color: #fff;
+  font-family: "Rajdhani";
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.content-text {
+  border-left: 2px solid rgba(255,255,255,0.1);
+  padding-left: 10px;
 }
 
 .photo-grid {
   display: grid;
-  gap: 8px;
-  border-radius: 8px;
-  overflow: hidden;
+  gap: 4px;
+  border: 1px solid rgba(0, 243, 255, 0.1);
+  padding: 4px;
+  background: rgba(0,0,0,0.3);
 }
 
-.grid-1 {
-  grid-template-columns: 1fr;
-}
-
-.grid-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-/* Special 2x2 layout for 4 images */
-.grid-2-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.grid-3 {
-  grid-template-columns: repeat(3, 1fr); /* Default for 3, 5, 6, etc. */
-}
+.grid-1 { grid-template-columns: 1fr; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-2-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
 
 .photo-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 1; /* Square photos for uniform grid */
+  aspect-ratio: 1;
   overflow: hidden;
-  background: #f5f5f5;
+  cursor: pointer;
 }
 
-.grid-1 .photo-wrapper {
-  aspect-ratio: auto; /* Let single photo keep its ratio or be wider */
-  max-height: 500px;
-}
+.grid-1 .photo-wrapper { aspect-ratio: auto; max-height: 400px; }
 
 .photo-img {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  filter: contrast(1.1) saturate(0.9);
+  transition: all 0.3s;
 }
 
-.photo-wrapper:hover .photo-img {
-  transform: scale(1.05);
+.img-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 243, 255, 0.1);
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
 }
+
+.photo-wrapper:hover .photo-img { transform: scale(1.05); filter: contrast(1.2); }
+.photo-wrapper:hover .img-overlay { opacity: 1; }
+
 </style>

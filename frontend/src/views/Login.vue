@@ -1,15 +1,20 @@
 <template>
   <div class="login-container">
+    <!-- 动态背景 -->
+    <div class="cyber-grid"></div>
+    <div class="scan-overlay"></div>
+
     <div class="login-content">
       <div class="brand-area">
         <h1 class="brand-title">OurTime</h1>
-        <p class="brand-subtitle">时光博物馆</p>
+        <p class="brand-subtitle">时空终端 // 需要访问权限</p>
       </div>
 
       <n-card class="login-card" :bordered="false" size="huge">
         <div class="card-header">
+          <div class="status-light" :class="{ active: !loading }"></div>
           <n-text class="card-title">{{
-            isRegisterMode ? "创建新账号" : "开启记忆之门"
+            isRegisterMode ? "新用户注册程序" : "身份验证程序"
           }}</n-text>
         </div>
 
@@ -17,13 +22,13 @@
           <n-form-item path="username" :show-label="false">
             <n-input
               v-model:value="form.username"
-              placeholder="请输入用户名"
+              placeholder="输入用户名"
               :disabled="loading"
               @keyup.enter="handleSubmit"
-              class="form-input"
+              class="cyber-input"
             >
               <template #prefix>
-                <span class="input-icon">👤</span>
+                <span class="input-icon">></span>
               </template>
             </n-input>
           </n-form-item>
@@ -32,13 +37,13 @@
             <n-input
               v-model:value="form.password"
               type="password"
-              placeholder="请输入密码"
+              placeholder="输入访问密钥"
               :disabled="loading"
               @keyup.enter="handleSubmit"
-              class="form-input"
+              class="cyber-input"
             >
               <template #prefix>
-                <span class="input-icon">🔑</span>
+                <span class="input-icon">#</span>
               </template>
             </n-input>
           </n-form-item>
@@ -51,22 +56,22 @@
             size="large"
             :loading="loading"
             @click="handleSubmit"
-            class="login-btn"
+            class="cyber-btn"
           >
-            {{ isRegisterMode ? "注册" : "登录" }}
+            {{ isRegisterMode ? "启动注册" : "连接核心" }}
           </n-button>
 
           <div class="toggle-mode">
-            <n-button text @click="toggleMode" :disabled="loading">
-              {{ isRegisterMode ? "已有账号？去登录" : "没有账号？去注册" }}
-            </n-button>
+            <span @click="toggleMode" class="cyber-link">
+              {{ isRegisterMode ? "[ 切换至登录 ]" : "[ 创建新身份 ]" }}
+            </span>
           </div>
         </div>
       </n-card>
 
       <div class="footer">
         <n-text depth="3" class="copyright"
-          >© 2023 OurTime. All memories reserved.</n-text
+          >系统版本 3.0 // 记忆核心在线</n-text
         >
       </div>
     </div>
@@ -96,12 +101,12 @@ const form = ref({
 const rules = {
   username: {
     required: true,
-    message: "请输入用户名",
+    message: "需要身份ID",
     trigger: "blur",
   },
   password: {
     required: true,
-    message: "请输入密码",
+    message: "需要密钥",
     trigger: "blur",
   },
 };
@@ -116,10 +121,10 @@ const handleLogin = async () => {
       password: form.value.password,
     });
     authStore.setAuth(response);
-    message.success("欢迎回来，时光旅人");
+    message.success("访问已授权");
     router.push("/");
   } catch (error: any) {
-    message.error(error.message || "登录失败，请重试");
+    message.error("访问被拒绝");
   } finally {
     loading.value = false;
   }
@@ -135,10 +140,10 @@ const handleRegister = async () => {
       password: form.value.password,
     });
     authStore.setAuth(response);
-    message.success("注册成功，欢迎加入");
+    message.success("身份已创建");
     router.push("/");
   } catch (error: any) {
-    message.error(error.message || "注册失败，请重试");
+    message.error("创建失败");
   } finally {
     loading.value = false;
   }
@@ -159,102 +164,129 @@ const toggleMode = () => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
 .login-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5f2f0;
-  background-image: radial-gradient(#e0dcd9 1px, transparent 1px);
-  background-size: 20px 20px;
-  padding: 20px;
+  background-color: #050b14;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 动态网格背景 */
+.cyber-grid {
+  position: absolute;
+  width: 200%; height: 200%;
+  background-image: 
+    linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+  animation: grid-scroll 20s linear infinite;
+  opacity: 0.2;
+}
+
+@keyframes grid-scroll {
+  0% { transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px); }
+  100% { transform: perspective(500px) rotateX(60deg) translateY(50px) translateZ(-200px); }
 }
 
 .login-content {
   width: 100%;
-  max-width: 420px;
+  max-width: 460px;
+  z-index: 10;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 32px;
+  gap: 20px;
 }
 
-.brand-area {
-  text-align: center;
-  margin-bottom: 16px;
-}
-
+.brand-area { text-align: center; }
 .brand-title {
-  font-family: "Noto Serif SC", serif;
-  font-size: 3rem;
-  font-weight: 700;
-  color: #5d4037;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-  text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
-}
-
-.brand-subtitle {
-  font-size: 1.1rem;
-  color: #8d6e63;
+  font-family: "Orbitron", sans-serif;
+  font-size: 3.5rem;
+  color: #fff;
+  text-shadow: 0 0 15px #00f3ff;
   letter-spacing: 4px;
-  font-weight: 300;
-  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.brand-subtitle {
+  font-family: "Share Tech Mono", monospace;
+  color: #00f3ff;
+  letter-spacing: 2px;
+  font-size: 0.8rem;
+  opacity: 0.8;
 }
 
 .login-card {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -1px rgba(0, 0, 0, 0.03), 0 20px 25px -5px rgba(0, 0, 0, 0.05);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  /* Note: Background handled by global override, but we add specific glowing borders here */
+  border: 1px solid rgba(0, 243, 255, 0.3);
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
 }
 
 .card-header {
-  text-align: center;
-  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+  padding-bottom: 15px;
+}
+
+.status-light {
+  width: 8px; height: 8px;
+  background: #333;
+  border-radius: 50%;
+}
+.status-light.active {
+  background: #00f3ff;
+  box-shadow: 0 0 8px #00f3ff;
+  animation: blink 2s infinite;
 }
 
 .card-title {
+  font-family: "Share Tech Mono", monospace;
   font-size: 1.2rem;
-  color: #5d4037;
-  font-weight: 500;
+  color: #fff;
 }
 
-.form-input {
+.cyber-input {
+  font-family: "Share Tech Mono";
+}
+.input-icon { color: #00f3ff; }
+
+.cyber-btn {
+  font-family: "Orbitron", sans-serif;
+  letter-spacing: 2px;
+  height: 50px;
   font-size: 1rem;
-}
-
-.input-icon {
-  font-size: 1.2rem;
-}
-
-.actions {
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 
 .toggle-mode {
   text-align: center;
-  margin-top: 8px;
+  margin-top: 15px;
 }
 
-.login-btn {
-  letter-spacing: 4px;
-  font-size: 1.1rem;
-  height: 48px;
+.cyber-link {
+  font-family: "Share Tech Mono";
+  color: rgba(0, 243, 255, 0.6);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s;
 }
-
-.footer {
-  text-align: center;
+.cyber-link:hover {
+  color: #00f3ff;
+  text-shadow: 0 0 5px #00f3ff;
 }
 
 .copyright {
-  font-size: 0.8rem;
-  opacity: 0.6;
+  font-family: "Share Tech Mono";
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.3);
 }
+
+@keyframes blink { 50% { opacity: 0.5; } }
 </style>

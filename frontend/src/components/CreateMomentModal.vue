@@ -2,7 +2,7 @@
   <n-modal
     v-model:show="showModal"
     preset="card"
-    title="发布瞬间"
+    title="数据录入终端"
     style="width: 800px; max-width: 90vw"
     :bordered="false"
     size="huge"
@@ -10,40 +10,44 @@
       content: 'soft',
       footer: 'soft',
     }"
+    class="cyber-modal"
   >
     <n-form ref="formRef" :model="form" :rules="rules">
-      <n-form-item path="content" label="内容">
+      <n-form-item path="content" label="记忆数据串">
         <n-input
           v-model:value="form.content"
           type="textarea"
-          placeholder="记录这一刻的心情..."
+          placeholder="输入原始数据..."
           :rows="5"
+          class="cyber-input"
         />
       </n-form-item>
 
-      <n-form-item path="happenedAt" label="发生时间">
-        <n-date-picker
-          v-model:value="form.happenedAt"
-          type="datetime"
-          placeholder="选择日期时间"
-          style="width: 100%"
-        />
-      </n-form-item>
+      <div class="grid-row">
+        <n-form-item path="happenedAt" label="时间戳">
+          <n-date-picker
+            v-model:value="form.happenedAt"
+            type="datetime"
+            placeholder="选择日期"
+            style="width: 100%"
+          />
+        </n-form-item>
 
-      <n-form-item path="location" label="地点">
-        <n-input v-model:value="form.location" placeholder="如：Tokyo" />
-      </n-form-item>
+        <n-form-item path="location" label="地理坐标">
+          <n-input v-model:value="form.location" placeholder="经纬度 或 城市名" class="cyber-input" />
+        </n-form-item>
+      </div>
 
-      <n-form-item path="albumId" label="相册">
+      <n-form-item path="albumId" label="归档文件夹">
         <n-select
           v-model:value="form.albumId"
-          placeholder="选择相册（可选）"
+          placeholder="选择目标路径"
           :options="albumOptions"
           clearable
         />
       </n-form-item>
 
-      <n-form-item label="照片">
+      <n-form-item label="视觉附件">
         <n-upload
           v-model:file-list="fileList"
           multiple
@@ -56,12 +60,8 @@
           <n-upload-dragger>
             <div class="upload-content">
               <n-icon size="48" :depth="3" class="upload-icon">
-                <svg viewBox="0 0 24 24">
-                  <path
-                    fill="currentColor"
-                    d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z"
-                  />
-                </svg>
+                 <!-- 上传图标 -->
+                 <div class="upload-symbol">+</div>
               </n-icon>
             </div>
           </n-upload-dragger>
@@ -71,9 +71,9 @@
 
     <template #footer>
       <div class="actions">
-        <n-button @click="handleClose">取消</n-button>
-        <n-button type="primary" :loading="loading" @click="handleSubmit">
-          发布
+        <n-button ghost @click="handleClose" class="cancel-btn">中止</n-button>
+        <n-button type="primary" :loading="loading" @click="handleSubmit" class="cyber-btn">
+          上传数据包
         </n-button>
       </div>
     </template>
@@ -127,9 +127,10 @@ const albumOptions = ref<Array<{ label: string; value: number }>>([]);
 
 const form = ref({
   content: "",
-  happenedAt: Date.now(), // 使用时间戳
+  happenedAt: Date.now(),
   location: "",
   albumId: null as number | null,
+  albumId: props.initialAlbumId || null, // fix: ensure initial value
 });
 
 // 移除验证规则，改为在提交时手动检查
@@ -141,7 +142,6 @@ watch(
   (newVal) => {
     if (newVal) {
       resetForm();
-      // 每次打开都重新加载相册列表，确保最新
       loadAlbums();
     }
   }
@@ -254,24 +254,20 @@ const handleRemove = (options: {
 
 const handleSubmit = async () => {
   try {
-    // 先检查照片
     if (photos.value.length === 0) {
-      message.warning("请至少上传一张照片");
+      message.warning("需要视觉数据");
       return;
     }
 
-    // 检查时间
     if (!form.value.happenedAt) {
-      message.warning("请选择发生时间");
+      message.warning("需要时间戳");
       return;
     }
 
-    // 验证其他表单项
     await formRef.value?.validate();
 
     loading.value = true;
 
-    // 将时间戳转换为本地时间的 ISO 格式字符串（不转换时区）
     const date = new Date(form.value.happenedAt);
     const happenedAt =
       date.getFullYear() +
@@ -294,11 +290,11 @@ const handleSubmit = async () => {
       photos: photos.value,
     });
 
-    message.success("发布成功");
+    message.success("数据包已上传");
     emit("success");
     showModal.value = false;
   } catch (error: any) {
-    message.error(error.message || "发布失败");
+    message.error(error.message || "上传失败");
   } finally {
     loading.value = false;
   }
@@ -328,7 +324,26 @@ onMounted(() => {
   padding: 20px;
 }
 
-.upload-icon {
-  color: rgba(0, 0, 0, 0.3);
+.upload-symbol {
+  font-size: 40px;
+  color: var(--neon-blue);
+  font-weight: bold;
+}
+
+.grid-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.cyber-btn {
+  letter-spacing: 2px;
+}
+
+.cancel-btn {
+  color: rgba(255,255,255,0.6);
+}
+.cancel-btn:hover {
+  color: #fff;
 }
 </style>

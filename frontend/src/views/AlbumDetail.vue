@@ -1,66 +1,86 @@
 <template>
   <div class="album-detail-container">
+    <div class="cyber-grid-bg"></div>
     <n-layout class="layout-bg">
-      <n-layout-header class="header" bordered>
+      <n-layout-header class="cyber-header" bordered>
         <div class="header-content">
           <div class="left-actions">
-            <n-button circle quaternary @click="handleBack">
+            <n-button
+              circle
+              quaternary
+              class="cyber-back-btn"
+              @click="handleBack"
+            >
               <template #icon>
                 <n-icon><arrow-back-outline /></n-icon>
               </template>
             </n-button>
-            <n-text class="page-title">相册详情</n-text>
+            <div class="page-title-wrapper">
+              <n-text class="page-title">档案详情 // 访问模式</n-text>
+              <div class="scan-line"></div>
+            </div>
           </div>
           <div class="header-actions">
-             <n-button type="primary" ghost @click="handleCreate">
-               <template #icon>
-                 <n-icon><add-outline /></n-icon>
-               </template>
-               添加瞬间
-             </n-button>
+            <n-button type="primary" class="cyber-btn" @click="handleCreate">
+              <template #icon>
+                <n-icon><add-outline /></n-icon>
+              </template>
+              录入新数据
+            </n-button>
           </div>
         </div>
       </n-layout-header>
 
       <n-layout-content class="content" :native-scrollbar="false">
         <div class="main-wrapper">
-          
           <!-- Album Info Card -->
-          <div class="album-info" v-if="album">
-             <div class="album-cover-wrapper">
-                <n-image 
-                  v-if="album.coverUrl" 
-                  :src="resolveUploadUrl(album.coverUrl)" 
-                  object-fit="cover"
-                  class="album-cover"
-                />
-                <div v-else class="album-cover-placeholder">
-                  <n-icon size="48" color="#ccc"><images-outline /></n-icon>
-                </div>
-             </div>
-             <div class="album-meta">
-                <h1 class="album-name">{{ album.name }}</h1>
-                <p class="album-desc">{{ album.description || '暂无描述' }}</p>
-                <div class="album-stats">
-                   <n-tag size="small" :bordered="false">创建于 {{ formatDateShort(album.createdAt) }}</n-tag>
-                </div>
-             </div>
+          <div class="album-info cyber-panel" v-if="album">
+            <div class="corner-deco tl"></div>
+            <div class="corner-deco tr"></div>
+            <div class="corner-deco bl"></div>
+            <div class="corner-deco br"></div>
+
+            <div class="album-cover-wrapper">
+              <n-image
+                v-if="album.coverUrl"
+                :src="resolveUploadUrl(album.coverUrl)"
+                object-fit="cover"
+                class="album-cover"
+              />
+              <div v-else class="album-cover-placeholder">
+                <n-icon size="48" color="#333"><images-outline /></n-icon>
+              </div>
+              <div class="scan-overlay"></div>
+            </div>
+            <div class="album-meta">
+              <h1 class="album-name glitch-text" :data-text="album.name">
+                {{ album.name }}
+              </h1>
+              <p class="album-desc">
+                {{ album.description || "元数据缺失..." }}
+              </p>
+              <div class="album-stats">
+                <n-tag size="small" class="cyber-tag" :bordered="false">
+                  建立日期: {{ formatDateShort(album.createdAt) }}
+                </n-tag>
+              </div>
+            </div>
           </div>
 
           <n-tabs
             v-model:value="activeTab"
             type="segment"
             animated
-            class="custom-tabs"
+            class="custom-tabs cyber-tabs"
           >
-            <n-tab-pane name="timeline" tab="时间轴">
+            <n-tab-pane name="timeline" tab="时间轴回溯">
               <div class="timeline-container">
                 <n-spin :show="loading">
                   <n-timeline v-if="moments.length > 0" size="large">
                     <n-timeline-item
                       v-for="moment in moments"
                       :key="moment.id"
-                      type="default"
+                      type="info"
                       :time="formatDate(moment.happenedAt)"
                     >
                       <template #icon>
@@ -73,28 +93,33 @@
                     </n-timeline-item>
                   </n-timeline>
                   <div v-else class="empty-state">
-                    <n-empty description="这个相册还没有瞬间，快来添加吧" />
+                    <n-empty description="尚未探测到记忆信号" />
                     <n-button
-                      class="create-btn"
+                      class="create-btn cyber-btn"
                       type="primary"
                       @click="handleCreate"
-                      >添加瞬间</n-button
+                      >启动数据录入</n-button
                     >
                   </div>
                 </n-spin>
 
                 <div v-if="hasMore" class="load-more">
-                  <n-button text @click="loadMore" :loading="loading">
+                  <n-button
+                    text
+                    @click="loadMore"
+                    :loading="loading"
+                    class="cyber-link-btn"
+                  >
                     <template #icon>
                       <n-icon><reload-outline /></n-icon>
                     </template>
-                    浏览更多回忆
+                    加载历史数据
                   </n-button>
                 </div>
               </div>
             </n-tab-pane>
 
-            <n-tab-pane name="photowall" tab="照片墙">
+            <n-tab-pane name="photowall" tab="视觉矩阵">
               <div class="photowall-container">
                 <n-spin :show="loading">
                   <div v-if="allPhotos.length > 0" class="masonry-grid">
@@ -102,7 +127,7 @@
                       <div
                         v-for="photo in allPhotos"
                         :key="photo.id"
-                        class="masonry-item"
+                        class="masonry-item cyber-frame"
                       >
                         <div class="image-wrapper">
                           <n-image
@@ -113,19 +138,25 @@
                             lazy
                           />
                           <div class="image-overlay"></div>
+                          <div class="scan-line-vertical"></div>
                         </div>
                       </div>
                     </n-image-group>
                   </div>
-                  <n-empty v-else description="相册空空如也" />
+                  <n-empty v-else description="无视觉数据" />
                 </n-spin>
 
                 <div v-if="hasMore && allPhotos.length > 0" class="load-more">
-                  <n-button text @click="loadMore" :loading="loading">
+                  <n-button
+                    text
+                    @click="loadMore"
+                    :loading="loading"
+                    class="cyber-link-btn"
+                  >
                     <template #icon>
                       <n-icon><reload-outline /></n-icon>
                     </template>
-                    加载更多
+                    加载更多数据
                   </n-button>
                 </div>
               </div>
@@ -167,7 +198,7 @@ import {
   AddOutline,
   ArrowBackOutline,
   ReloadOutline,
-  ImagesOutline
+  ImagesOutline,
 } from "@vicons/ionicons5";
 import { getMoments } from "@/api/moment";
 import { getAlbumById } from "@/api/album";
@@ -217,18 +248,18 @@ const formatDate = (dateStr: string) => {
 };
 
 const formatDateShort = (dateStr: string) => {
-    if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString();
-}
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleDateString();
+};
 
 const loadAlbumInfo = async () => {
-    try {
-        album.value = await getAlbumById(albumId);
-    } catch (error: any) {
-        message.error("加载相册信息失败");
-        router.push('/albums');
-    }
-}
+  try {
+    album.value = await getAlbumById(albumId);
+  } catch (error: any) {
+    message.error("加载相册信息失败");
+    router.push("/albums");
+  }
+};
 
 const loadMoments = async (reset = false) => {
   if (loading.value) return;
@@ -247,7 +278,6 @@ const loadMoments = async (reset = false) => {
 
     page.value = response.number + 1;
     hasMore.value = !response.last;
-
   } catch (error: any) {
     message.error(error.message || "加载失败");
   } finally {
@@ -277,9 +307,9 @@ const handleBack = () => {
 
 onMounted(() => {
   if (!albumId) {
-      message.error("相册ID无效");
-      router.push('/albums');
-      return;
+    message.error("相册ID无效");
+    router.push("/albums");
+    return;
   }
   loadAlbumInfo();
   loadMoments(true);
@@ -287,30 +317,55 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap");
+
 .album-detail-container {
   min-height: 100vh;
+  background-color: var(--dark-bg);
+  position: relative;
+  color: #fff;
+  font-family: "Rajdhani", sans-serif;
+}
+
+.cyber-grid-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(
+      rgba(0, 243, 255, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .layout-bg {
   background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
-.header {
-  padding: 0 24px;
+.cyber-header {
   height: 64px;
+  background: rgba(5, 11, 20, 0.8) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+  padding: 0 24px;
   display: flex;
   align-items: center;
-  background: rgba(253, 252, 248, 0.9) !important;
-  backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .header-content {
   width: 100%;
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -318,16 +373,50 @@ onMounted(() => {
 }
 
 .left-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cyber-back-btn {
+  color: var(--neon-blue);
+}
+.cyber-back-btn:hover {
+  color: #fff;
+  background: rgba(0, 243, 255, 0.2);
+}
+
+.page-title-wrapper {
+  position: relative;
 }
 
 .page-title {
-  font-family: "Noto Serif SC", serif;
+  font-family: "Share Tech Mono", monospace;
   font-size: 18px;
-  font-weight: 600;
-  color: #5d4037;
+  color: var(--neon-blue);
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
+}
+
+.scan-line {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--neon-blue);
+  animation: scan-width 2s infinite alternate;
+}
+
+@keyframes scan-width {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  100% {
+    width: 100%;
+    opacity: 1;
+  }
 }
 
 .content {
@@ -335,77 +424,230 @@ onMounted(() => {
 }
 
 .main-wrapper {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 32px 24px;
 }
 
-.album-info {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 40px;
-    background: white;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+.cyber-panel {
+  background: rgba(5, 11, 20, 0.6);
+  border: 1px solid rgba(0, 243, 255, 0.3);
+  position: relative;
+  padding: 24px;
+  display: flex;
+  gap: 24px;
+  margin-bottom: 40px;
+  backdrop-filter: blur(5px);
+}
+
+.corner-deco {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--neon-blue);
+}
+.tl {
+  top: -1px;
+  left: -1px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.tr {
+  top: -1px;
+  right: -1px;
+  border-left: 0;
+  border-bottom: 0;
+}
+.bl {
+  bottom: -1px;
+  left: -1px;
+  border-right: 0;
+  border-top: 0;
+}
+.br {
+  bottom: -1px;
+  right: -1px;
+  border-left: 0;
+  border-top: 0;
 }
 
 .album-cover-wrapper {
-    width: 120px;
-    height: 120px;
-    flex-shrink: 0;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #f5f5f5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+  border: 1px solid var(--neon-blue);
+  position: relative;
+  overflow: hidden;
+  background: #000;
 }
 
 .album-cover {
-    width: 100%;
-    height: 100%;
-    display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  filter: grayscale(50%);
 }
 
 .album-cover-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    background: #f0f0f0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+}
+
+.scan-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 243, 255, 0.1) 3px
+  );
+  pointer-events: none;
 }
 
 .album-meta {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .album-name {
-    font-family: "Noto Serif SC", serif;
-    font-size: 24px;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0 0 8px 0;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .album-desc {
-    color: #666;
-    font-size: 14px;
-    margin: 0 0 16px 0;
-    line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin: 0 0 16px 0;
+  font-family: "Share Tech Mono";
 }
 
-.custom-tabs {
-  margin-bottom: 32px;
+.cyber-tag {
+  background: rgba(0, 243, 255, 0.1);
+  color: var(--neon-blue);
+  border: 1px solid rgba(0, 243, 255, 0.3);
+}
+
+/* Tabs Customization */
+:deep(.n-tabs .n-tabs-nav) {
+  background: transparent;
+}
+:deep(.n-tabs .n-tabs-tab) {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: "Share Tech Mono";
+  transition: all 0.3s;
+}
+:deep(.n-tabs .n-tabs-tab:hover) {
+  color: var(--neon-blue);
+}
+:deep(.n-tabs .n-tabs-tab--active) {
+  color: var(--neon-blue) !important;
+  text-shadow: 0 0 5px var(--neon-blue);
+}
+:deep(.n-tabs .n-tabs-bar) {
+  background-color: var(--neon-blue);
+  box-shadow: 0 0 8px var(--neon-blue);
+}
+/* Tabs Background Fix */
+:deep(.n-tabs-pane-wrapper) {
+  background: transparent !important;
+}
+:deep(.n-tab-pane) {
+  background-color: rgba(5, 11, 20, 0.4) !important;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 243, 255, 0.1);
+  border-top: none;
+  padding: 20px;
+  color: #fff;
+}
+
+/* Segmented Tabs Override */
+:deep(.n-tabs .n-tabs-rail) {
+  background-color: rgba(5, 11, 20, 0.8) !important;
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  padding: 4px;
+  border-radius: 4px;
+}
+
+/* Target the sliding capsule (background of active tab) */
+:deep(.n-tabs .n-tabs-rail .n-tabs-capsule) {
+  background-color: rgba(0, 243, 255, 0.15) !important;
+  border: 1px solid var(--neon-blue) !important;
+  box-shadow: 0 0 10px rgba(0, 243, 255, 0.3) !important;
+  border-radius: 4px;
+}
+
+/* Target the active tab text */
+:deep(.n-tabs .n-tabs-tab.n-tabs-tab--active) {
+  color: var(--neon-blue) !important;
+  text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+  font-weight: bold;
+  z-index: 1; /* Ensure text is above capsule */
+}
+
+/* Target inactive tabs */
+:deep(.n-tabs .n-tabs-tab) {
+  background-color: transparent !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  transition: all 0.3s;
+}
+
+:deep(.n-tabs .n-tabs-tab:hover) {
+  color: var(--neon-blue) !important;
+}
+
+/* Timeline Customization */
+:deep(.n-timeline .n-timeline-item-timeline__line) {
+  background-color: rgba(0, 243, 255, 0.2) !important;
+}
+
+:deep(.n-timeline .n-timeline-item-content__title) {
+  color: var(--neon-blue) !important;
+  font-family: "Share Tech Mono";
+  margin-bottom: 6px !important;
+}
+
+:deep(.n-timeline .n-timeline-item-content__time) {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-family: "Share Tech Mono";
+  font-size: 12px;
+}
+
+:deep(.n-timeline .n-timeline-item-content__content) {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Empty State Customization */
+:deep(.n-empty__description) {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-family: "Share Tech Mono";
+}
+:deep(.n-empty__icon) {
+  color: rgba(0, 243, 255, 0.3) !important;
+  transition: all 0.3s;
+}
+:deep(.n-empty:hover .n-empty__icon) {
+  color: var(--neon-blue) !important;
+  filter: drop-shadow(0 0 8px var(--neon-blue));
 }
 
 .timeline-container {
   padding: 20px 0;
-  max-width: 700px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -413,9 +655,9 @@ onMounted(() => {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: #d7ccc8;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 2px #d7ccc8;
+  background-color: var(--dark-bg);
+  border: 2px solid var(--neon-blue);
+  box-shadow: 0 0 5px var(--neon-blue);
 }
 
 .empty-state {
@@ -427,12 +669,15 @@ onMounted(() => {
   gap: 16px;
 }
 
-.load-more {
-  text-align: center;
-  margin-top: 48px;
-  padding-bottom: 32px;
+.cyber-link-btn {
+  color: var(--neon-blue);
+  font-family: "Share Tech Mono";
+}
+.cyber-link-btn:hover {
+  text-shadow: 0 0 5px var(--neon-blue);
 }
 
+/* Photowall */
 .photowall-container {
   padding: 20px 0;
 }
@@ -443,46 +688,75 @@ onMounted(() => {
   gap: 16px;
 }
 
-.masonry-item {
+.cyber-frame {
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  position: relative;
   overflow: hidden;
-  border-radius: 8px;
-  cursor: pointer;
-  break-inside: avoid;
-  width: 100%;
-  background: #fff;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  transition: all 0.3s;
+}
+.cyber-frame:hover {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+  transform: translateY(-5px);
 }
 
 .image-wrapper {
   position: relative;
-  overflow: hidden;
 }
 
-.masonry-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-.masonry-item :deep(.n-image) {
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  display: block;
+  height: 100%;
+  background: rgba(0, 243, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.cyber-frame:hover .image-overlay {
+  opacity: 1;
 }
 
-.masonry-item :deep(.n-image-wrapper) {
-  width: 100%;
-  padding-top: 0 !important;
+.scan-line-vertical {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: rgba(0, 243, 255, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s;
+  transform: translateX(-10px);
 }
-
-.masonry-item :deep(.n-image img) {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
+.cyber-frame:hover .scan-line-vertical {
+  opacity: 1;
+  animation: scan-right 1s linear infinite;
+}
+@keyframes scan-right {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
 }
 
 .photo-image {
   width: 100%;
+  display: block;
+  filter: contrast(1.1) saturate(0.9);
+}
+
+.load-more {
+  text-align: center;
+  margin-top: 48px;
+  padding-bottom: 32px;
 }
 </style>
-

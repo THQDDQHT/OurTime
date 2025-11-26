@@ -1,21 +1,28 @@
 <template>
   <div class="album-list-container">
     <div class="section-header">
-      <n-text class="section-title">我的时光集</n-text>
-      <n-button type="primary" dashed @click="showCreateModal = true">
+      <n-text class="section-title">归档模块 // 相册集</n-text>
+      <n-button
+        type="primary"
+        dashed
+        @click="showCreateModal = true"
+        class="cyber-btn-dashed"
+      >
         <template #icon>
           <n-icon><add-outline /></n-icon>
         </template>
-        新建相册
+        新建归档
       </n-button>
     </div>
 
     <div v-if="errorMessage" class="error-state">
-      <n-empty description="加载失败">
+      <n-empty description="数据损坏">
         <template #extra>
           <div class="error-actions">
             <n-text type="error">{{ errorMessage }}</n-text>
-            <n-button size="small" @click="loadAlbums">重试</n-button>
+            <n-button size="small" @click="loadAlbums" class="cyber-btn-small"
+              >重试连接</n-button
+            >
           </div>
         </template>
       </n-empty>
@@ -23,69 +30,86 @@
 
     <n-spin :show="loading" v-else>
       <div v-if="albums.length > 0" class="albums-grid">
-        <n-card
+        <div
           v-for="album in albums"
           :key="album.id"
-          class="album-card"
-          hoverable
+          class="cyber-card"
           @click="handleView(album)"
         >
-          <template #cover>
-            <div class="album-cover">
-              <n-image
-                v-if="album.coverUrl"
-                :src="resolveUploadUrl(album.coverUrl)"
-                object-fit="cover"
-                preview-disabled
-                class="cover-image"
-              />
-              <div v-else class="cover-placeholder">
-                <n-icon size="48" :depth="3">
-                  <images-outline />
-                </n-icon>
-              </div>
-              <div class="album-hover-overlay">
-                <n-button class="enter-btn" secondary round type="primary">
-                  进入相册
-                </n-button>
-              </div>
-            </div>
-          </template>
+          <!-- 角落装饰 -->
+          <div class="corner-deco tl"></div>
+          <div class="corner-deco tr"></div>
+          <div class="corner-deco bl"></div>
+          <div class="corner-deco br"></div>
 
-          <div class="album-info">
-            <n-text strong class="album-name">{{ album.name }}</n-text>
-            <n-text depth="3" class="date">
-              {{ formatDate(album.createdAt) }}
-            </n-text>
+          <div class="card-cover">
+            <n-image
+              v-if="album.coverUrl"
+              :src="resolveUploadUrl(album.coverUrl)"
+              object-fit="cover"
+              preview-disabled
+              class="cover-image"
+            />
+            <div v-else class="cover-placeholder">
+              <n-icon size="48" :depth="3" class="placeholder-icon">
+                <images-outline />
+              </n-icon>
+            </div>
+
+            <!-- 扫描覆盖层 -->
+            <div class="scan-overlay"></div>
+            <div class="hover-actions">
+              <n-button class="enter-btn cyber-btn-glitch">访问数据</n-button>
+            </div>
           </div>
 
-          <template #action>
-            <div class="album-actions">
-              <n-text depth="3" class="description" v-if="album.description">
-                {{ album.description }}
-              </n-text>
-              <div class="action-buttons">
-                <n-button size="small" text @click.stop="handleEdit(album)">
-                  <template #icon><create-outline /></template>
-                </n-button>
-                <n-button
-                  size="small"
-                  text
-                  type="error"
-                  @click.stop="handleDelete(album)"
-                >
-                  <template #icon><trash-outline /></template>
-                </n-button>
-              </div>
+          <div class="card-info">
+            <div class="info-header">
+              <n-text class="album-name">{{ album.name }}</n-text>
+              <n-text class="id-tag"
+                >编号:{{ album.id.toString().padStart(4, "0") }}</n-text
+              >
             </div>
-          </template>
-        </n-card>
+            <n-text class="date"
+              >创建于: {{ formatDate(album.createdAt) }}</n-text
+            >
+          </div>
+
+          <div class="card-footer">
+            <n-text class="description" v-if="album.description">
+              {{ album.description }}
+            </n-text>
+            <div class="action-buttons">
+              <n-button
+                size="tiny"
+                text
+                @click.stop="handleEdit(album)"
+                class="action-icon"
+              >
+                <template #icon><create-outline /></template>
+              </n-button>
+              <n-button
+                size="tiny"
+                text
+                type="error"
+                @click.stop="handleDelete(album)"
+                class="action-icon delete"
+              >
+                <template #icon><trash-outline /></template>
+              </n-button>
+            </div>
+          </div>
+        </div>
       </div>
       <div v-else class="empty-state">
-        <n-empty description="还没有创建相册" size="large">
+        <n-empty description="未发现归档" size="large">
           <template #extra>
-            <n-button type="primary" @click="showCreateModal = true">
-              创建第一个相册
+            <n-button
+              type="primary"
+              @click="showCreateModal = true"
+              class="cyber-btn"
+            >
+              初始化首个归档
             </n-button>
           </template>
         </n-empty>
@@ -98,22 +122,28 @@
       preset="card"
       style="width: 600px; max-width: 90vw"
       size="huge"
-      :title="editingAlbum ? '编辑相册' : '创建相册'"
+      :title="editingAlbum ? '修改归档配置' : '新建归档协议'"
       :bordered="false"
+      class="cyber-modal"
     >
       <n-form ref="formRef" :model="form" :rules="rules">
-        <n-form-item path="name" label="相册名称">
-          <n-input v-model:value="form.name" placeholder="给这段回忆起个名字" />
+        <n-form-item path="name" label="归档名称">
+          <n-input
+            v-model:value="form.name"
+            placeholder="输入名称..."
+            class="cyber-input"
+          />
         </n-form-item>
-        <n-form-item path="description" label="描述">
+        <n-form-item path="description" label="元数据描述">
           <n-input
             v-model:value="form.description"
             type="textarea"
-            placeholder="写点什么来描述这个相册..."
+            placeholder="输入元数据..."
             :rows="3"
+            class="cyber-input"
           />
         </n-form-item>
-        <n-form-item path="coverUrl" label="封面图">
+        <n-form-item path="coverUrl" label="封面图像">
           <div class="cover-upload-container">
             <n-upload
               action="#"
@@ -124,16 +154,15 @@
               <div v-if="form.coverUrl" class="cover-preview">
                 <img :src="resolveUploadUrl(form.coverUrl)" alt="cover" />
                 <div class="cover-mask">
-                  <n-icon size="24" color="#fff"><camera-outline /></n-icon>
-                  <span>更换封面</span>
+                  <n-icon size="24" color="#00f3ff"><camera-outline /></n-icon>
+                  <span>更新图像</span>
                 </div>
               </div>
               <n-upload-dragger v-else class="cover-dragger">
                 <div class="dragger-content">
-                  <n-icon size="32" :depth="3">
+                  <n-icon size="32" :depth="3" class="upload-icon">
                     <add-outline />
                   </n-icon>
-                  <n-text depth="3">上传封面</n-text>
                 </div>
               </n-upload-dragger>
             </n-upload>
@@ -143,9 +172,16 @@
 
       <template #footer>
         <div class="modal-actions">
-          <n-button @click="handleCancel">取消</n-button>
-          <n-button type="primary" :loading="submitting" @click="handleSubmit">
-            {{ editingAlbum ? "保存" : "创建" }}
+          <n-button ghost @click="handleCancel" class="cancel-btn"
+            >终止</n-button
+          >
+          <n-button
+            type="primary"
+            :loading="submitting"
+            @click="handleSubmit"
+            class="cyber-btn"
+          >
+            {{ editingAlbum ? "保存配置" : "执行" }}
           </n-button>
         </div>
       </template>
@@ -158,7 +194,6 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useMessage, useDialog } from "naive-ui";
 import {
-  NCard,
   NButton,
   NText,
   NImage,
@@ -206,7 +241,7 @@ const form = ref<AlbumRequest>({
 const rules = {
   name: {
     required: true,
-    message: "请输入相册名称",
+    message: "请输入名称",
     trigger: "blur",
   },
 };
@@ -221,32 +256,25 @@ const handleUpload = async ({
     const response = await uploadFile(file.file);
     form.value.coverUrl = response.url;
     onFinish();
-    message.success("封面上传成功");
+    message.success("图像已上传");
   } catch (error) {
     onError();
-    message.error("封面上传失败");
+    message.error("上传失败");
   }
 };
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString("zh-CN", {
-    year: "numeric",
-    month: "short", // shorter month format
-    day: "numeric",
-  });
+  return date.toISOString().split("T")[0]; // YYYY-MM-DD
 };
 
 const loadAlbums = async () => {
   try {
     loading.value = true;
     errorMessage.value = "";
-    console.log("开始加载相册列表...");
     albums.value = await getAlbums();
-    console.log("相册列表加载成功:", albums.value);
   } catch (error: any) {
-    console.error("加载相册失败:", error);
-    errorMessage.value = error.message || "加载失败，请检查网络或后端服务";
+    errorMessage.value = error.message || "连接错误";
     message.error(errorMessage.value);
   } finally {
     loading.value = false;
@@ -270,13 +298,13 @@ const handleEdit = (album: AlbumResponse) => {
 const handleDelete = (album: AlbumResponse) => {
   dialog.warning({
     title: "确认删除",
-    content: `确定要删除相册"${album.name}"吗？相册内的回忆不会被删除，但将不再属于任何相册。`,
+    content: `删除归档 "${album.name}"? 数据将解除关联但不会被销毁。`,
     positiveText: "删除",
     negativeText: "取消",
     onPositiveClick: async () => {
       try {
         await deleteAlbum(album.id);
-        message.success("删除成功");
+        message.success("归档已删除");
         loadAlbums();
       } catch (error: any) {
         message.error(error.message || "删除失败");
@@ -292,10 +320,10 @@ const handleSubmit = async () => {
 
     if (editingAlbum.value) {
       await updateAlbum(editingAlbum.value.id, form.value);
-      message.success("更新成功");
+      message.success("配置已更新");
     } else {
       await createAlbum(form.value);
-      message.success("创建成功");
+      message.success("归档已创建");
     }
 
     showCreateModal.value = false;
@@ -339,13 +367,15 @@ onMounted(() => {
   align-items: center;
   margin-bottom: 24px;
   padding: 0 8px;
+  border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+  padding-bottom: 10px;
 }
 
 .section-title {
-  font-family: "Noto Serif SC", serif;
-  font-size: 20px;
-  font-weight: 600;
-  color: #4e342e;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 24px;
+  color: var(--neon-blue);
+  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
 }
 
 .albums-grid {
@@ -354,190 +384,235 @@ onMounted(() => {
   gap: 24px;
 }
 
-.album-card {
-  cursor: pointer;
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.album-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
-}
-
-.album-cover {
-  width: 100%;
-  height: 200px;
+/* Cyber Card Styles */
+.cyber-card {
   position: relative;
-  background: #f5f5f5;
+  background: rgba(5, 11, 20, 0.6);
+  border: 1px solid rgba(0, 243, 255, 0.3);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cyber-card:hover {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+  transform: translateY(-5px);
+}
+
+.corner-deco {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--neon-blue);
+  transition: all 0.3s;
+  opacity: 0.5;
+  z-index: 2;
+}
+.cyber-card:hover .corner-deco {
+  opacity: 1;
+  width: 12px;
+  height: 12px;
+}
+.tl {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+.tr {
+  top: 0;
+  right: 0;
+  border-left: 0;
+  border-bottom: 0;
+}
+.bl {
+  bottom: 0;
+  left: 0;
+  border-right: 0;
+  border-top: 0;
+}
+.br {
+  bottom: 0;
+  right: 0;
+  border-left: 0;
+  border-top: 0;
+}
+
+.card-cover {
+  width: 100%;
+  height: 180px;
+  position: relative;
+  background: #000;
   overflow: hidden;
 }
 
 .cover-image {
   width: 100%;
   height: 100%;
-  transition: transform 0.5s ease;
+  opacity: 0.8;
+  filter: grayscale(40%);
+  transition: all 0.5s;
 }
-
-.album-card:hover .cover-image {
+.cyber-card:hover .cover-image {
+  filter: grayscale(0%);
+  opacity: 1;
   transform: scale(1.05);
 }
 
-.cover-placeholder {
+.scan-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fafafc;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 243, 255, 0.1) 3px
+  );
+  pointer-events: none;
 }
 
-.album-hover-overlay {
+.hover-actions {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s;
 }
-
-.album-card:hover .album-hover-overlay {
+.cyber-card:hover .hover-actions {
   opacity: 1;
 }
 
-.album-info {
+.cyber-btn-glitch {
+  background: transparent;
+  border: 1px solid var(--neon-blue);
+  color: var(--neon-blue);
+  font-family: "Share Tech Mono";
+  letter-spacing: 2px;
+}
+.cyber-btn-glitch:hover {
+  background: var(--neon-blue);
+  color: #000;
+  box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.card-info {
+  padding: 12px;
+  border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+}
+
+.info-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
+  align-items: center;
+  margin-bottom: 4px;
 }
 
 .album-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  color: #fff;
+  font-family: "Rajdhani";
+  font-weight: bold;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.id-tag {
+  font-size: 10px;
+  color: var(--neon-purple);
+  font-family: "Share Tech Mono";
+}
+
+.date {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.card-footer {
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 40px;
+}
+
+.description {
+  font-size: 12px;
+  color: rgba(0, 243, 255, 0.7);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 70%;
 }
 
-.date {
-  font-size: 12px;
-}
-
-.album-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 24px;
-}
-
-.description {
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 60%;
-  margin-right: auto;
-}
-
 .action-buttons {
   display: flex;
-  gap: 4px;
-  opacity: 0; /* Hidden by default */
-  transition: opacity 0.2s;
+  gap: 5px;
 }
 
-.album-card:hover .action-buttons {
-  opacity: 1;
+.action-icon {
+  color: rgba(255, 255, 255, 0.5);
+}
+.action-icon:hover {
+  color: var(--neon-blue);
+}
+.action-icon.delete:hover {
+  color: var(--neon-red);
 }
 
 /* Modal Styles */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
 .cover-upload-container {
   width: 100%;
 }
-
-.cover-dragger {
-  background-color: #fafafc;
-  border-radius: 8px;
-  height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed #e0e0e0;
-}
-
-.dragger-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
 .cover-preview {
   position: relative;
   width: 100%;
   height: 200px;
-  border-radius: 8px;
+  border: 1px solid var(--neon-blue);
   overflow: hidden;
-  cursor: pointer;
 }
-
 .cover-preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .cover-mask {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s;
-  color: #fff;
-  gap: 8px;
+  color: var(--neon-blue);
+  font-family: "Share Tech Mono";
 }
-
 .cover-preview:hover .cover-mask {
   opacity: 1;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+.placeholder-icon {
+  color: #333;
 }
-
-.empty-state {
-  padding: 60px 0;
-}
-
-.error-state {
-  padding: 40px 0;
-  display: flex;
-  justify-content: center;
-}
-
-.error-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+.upload-icon {
+  color: var(--neon-blue);
 }
 </style>

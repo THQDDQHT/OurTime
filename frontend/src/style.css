@@ -1,9 +1,19 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Noto+Serif+SC:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --neon-blue: #00f3ff;
+  --neon-purple: #bc13fe;
+  --neon-red: #ff0055;
+  --dark-bg: #050b14;
+  --glass-bg: rgba(0, 243, 255, 0.05);
+  --glass-border: rgba(0, 243, 255, 0.2);
+  --text-main: #e0f7fa;
+  --text-dim: rgba(224, 247, 250, 0.6);
+}
 
 * {
   margin: 0;
@@ -12,33 +22,115 @@
 }
 
 body {
-  font-family: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-family: "Rajdhani", sans-serif; /* 科技感字体 */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #fdfcf8; /* Warm off-white background */
-  color: #2c3e50;
+  background-color: var(--dark-bg);
+  color: var(--text-main);
+  overflow-x: hidden;
 }
 
 #app {
   min-height: 100vh;
 }
 
-/* Custom scrollbar for Webkit */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #fdfcf8; 
+  background: #020408; 
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d7ccc8; 
-  border-radius: 4px;
+  background: #00f3ff; 
+  border-radius: 2px;
+  box-shadow: 0 0 5px #00f3ff;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1887f; 
+  background: #bc13fe; 
 }
 
+/* --- 全局覆盖 Naive UI 样式 (为了适应赛博风格) --- */
+
+/* Modal / Card 背景 */
+.n-modal, .n-card {
+  background-color: rgba(5, 11, 20, 0.9) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.15) !important;
+  backdrop-filter: blur(10px);
+  color: var(--text-main) !important;
+}
+
+.n-card-header__main {
+  color: var(--neon-blue) !important;
+  font-family: "Share Tech Mono", monospace;
+  letter-spacing: 1px;
+}
+
+.n-card__content, .n-card__footer {
+  color: var(--text-main) !important;
+}
+
+/* Input 输入框 */
+.n-input {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(0, 243, 255, 0.3) !important;
+}
+.n-input:hover, .n-input--focus {
+  border-color: var(--neon-blue) !important;
+  box-shadow: 0 0 8px rgba(0, 243, 255, 0.3) !important;
+}
+.n-input__input-el, .n-input__textarea-el {
+  color: #fff !important;
+  font-family: "Share Tech Mono", monospace;
+}
+.n-input__placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Select */
+.n-base-selection {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(0, 243, 255, 0.3) !important;
+}
+.n-base-selection-label {
+  background-color: transparent !important;
+}
+
+/* Date Picker */
+.n-date-picker-input {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Button */
+.n-button--primary-type {
+  background-color: rgba(0, 243, 255, 0.15) !important;
+  border: 1px solid var(--neon-blue) !important;
+  color: var(--neon-blue) !important;
+  font-family: "Share Tech Mono", monospace;
+}
+.n-button--primary-type:hover, .n-button--primary-type:focus {
+  background-color: var(--neon-blue) !important;
+  color: #000 !important;
+  box-shadow: 0 0 15px var(--neon-blue) !important;
+}
+
+/* Upload */
+.n-upload-dragger {
+  background-color: rgba(0,0,0,0.2) !important;
+  border: 1px dashed var(--glass-border) !important;
+}
+.n-upload-dragger:hover {
+  border-color: var(--neon-blue) !important;
+  background-color: rgba(0, 243, 255, 0.05) !important;
+}
+
+/* Text Color Overrides */
+.n-form-item-label {
+  color: var(--neon-blue) !important;
+  font-family: "Share Tech Mono";
+}
