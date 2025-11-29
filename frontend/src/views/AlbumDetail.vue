@@ -70,7 +70,7 @@
             </div>
             <div class="album-meta flex-1 flex flex-col justify-center">
               <h1
-                class="album-name glitch-text font-rajdhani text-4xl font-bold text-white mb-2 uppercase tracking-wide"
+                class="album-name font-rajdhani text-4xl font-bold text-white mb-2 uppercase tracking-wide"
                 :data-text="album.name"
               >
                 {{ album.name }}
@@ -96,7 +96,6 @@
             v-model:value="activeTab"
             type="segment"
             animated
-            class="custom-tabs cyber-tabs"
           >
             <n-tab-pane name="timeline" tab="时间轴回溯">
               <div class="timeline-container py-5 max-w-[800px] mx-auto">

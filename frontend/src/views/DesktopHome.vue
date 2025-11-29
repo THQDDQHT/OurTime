@@ -150,7 +150,6 @@
 
     <n-modal
       v-model:show="showAlbumModal"
-      class="cyber-modal"
       preset="card"
       size="huge"
       title="记忆档案库"

@@ -16,7 +16,7 @@
         class="back-btn cursor-pointer flex items-center gap-2.5 font-share-tech-mono text-white/70 transition-colors duration-300 hover:text-neon-blue hover:text-shadow-glow-blue-sm"
         @click="router.back()"
       >
-        <span class="icon-arrow"><</span>
+        <span><</span>
         <span>RETURN_TO_DESKTOP // 返回桌面</span>
       </div>
       <div
@@ -297,19 +297,6 @@ onMounted(() => {
   }
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  border-bottom: 1px dashed rgba(0, 243, 255, 0.3);
-  padding-bottom: 5px;
-}
-.moment-id {
-  font-family: "Share Tech Mono";
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-}
 /* Tailwind 类样式 */
 .moment-item.left {
   left: 0;

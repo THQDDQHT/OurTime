@@ -93,7 +93,6 @@
       v-model:show="showManageModal"
       preset="card"
       title="数据矩阵 // DATA_MATRIX"
-      class="cyber-player-modal"
       size="huge"
       style="width: 800px; max-width: 90vw"
     >
@@ -106,11 +105,11 @@
                   <img :src="song.cover || '/default-music.svg'" />
                 </div>
               </template>
-              <div class="song-list-item" @click="playSong(song)">
-                <div class="song-list-info">
+              <div @click="playSong(song)">
+                <div>
                   <n-text strong>{{ song.title }}</n-text>
                 </div>
-                <div class="song-list-action">
+                <div>
                   <div
                     class="status-indicator"
                     :class="{ active: musicStore.currentSong?.id === song.id }"
@@ -170,7 +169,7 @@
               </n-upload>
             </n-form-item>
 
-            <div class="form-actions">
+            <div>
               <n-button
                 type="primary"
                 ghost

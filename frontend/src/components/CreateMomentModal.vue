@@ -10,7 +10,6 @@
       content: 'soft',
       footer: 'soft',
     }"
-    class="cyber-modal"
   >
     <n-form ref="formRef" :model="form" :rules="rules">
       <n-form-item path="content" label="记忆数据串">
@@ -19,7 +18,6 @@
           type="textarea"
           placeholder="输入原始数据..."
           :rows="5"
-          class="cyber-input"
         />
       </n-form-item>
 
@@ -37,7 +35,6 @@
           <n-input
             v-model:value="form.location"
             placeholder="经纬度 或 城市名"
-            class="cyber-input"
           />
         </n-form-item>
       </div>
@@ -63,7 +60,7 @@
         >
           <n-upload-dragger>
             <div class="upload-content">
-              <n-icon size="48" :depth="3" class="upload-icon">
+              <n-icon size="48" :depth="3">
                 <!-- 上传图标 -->
                 <div class="upload-symbol">+</div>
               </n-icon>

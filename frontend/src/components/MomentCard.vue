@@ -1,5 +1,5 @@
 <template>
-  <div class="moment-card cyber-glass">
+  <div class="moment-card">
     <div class="card-header">
       <div class="meta-info">
         <span class="date">时间戳: {{ formatDate(moment.happenedAt) }}</span>
@@ -24,7 +24,6 @@
         @positive-click="handleDelete"
         positive-text="确认"
         negative-text="取消"
-        class="cyber-popconfirm"
       >
         <template #trigger>
           <n-button text class="delete-btn">
