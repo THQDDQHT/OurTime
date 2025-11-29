@@ -40,70 +40,75 @@
 - **Security**: Custom Auth (Secret Key) + JWT
 - **Storage**: Local File System (Docker Volume)
 
-## 🚀 快速部署
+# 🚀 快速部署
 
-### 1. 环境准备
+## 📋 部署前准备
 
-- Docker & Docker Compose
+### 1. 本地打包文件
 
-### 2. 启动服务
-
-将项目克隆到本地后，直接运行：
-
-```bash
-docker-compose up -d --build
-```
-
-### 3. 接入中枢
-
-打开浏览器访问 `http://localhost`。
-
-- 默认暗号：请在 `.env` 或 `docker-compose.yml` 中配置 `AUTH_SECRET`（默认为代码中预设值 `neural_secret_key`）。
-
-## 💻 本地开发
-
-### 后端 (Backend)
-
-```bash
-cd backend
-# 确保本地 PostgreSQL 已启动并在 application.yml 中配置正确
-mvn spring-boot:run
-```
-
-### 前端 (Frontend)
+#### 前端打包
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run build
 ```
 
-## 📅 进化路线图 (Evolution Roadmap)
+打包完成后会生成 `frontend/dist` 目录
 
-详见 [Project Vision 2025](docs/VISION_2025.md)。
+#### 后端打包
 
-### v4.0 - 感知重构 (Sensory Reconstruction)
-
-- [ ] **声音波纹**: 自动匹配环境白噪音，支持语音胶囊。
-- [ ] **生物体征**: 叠加心率与健康数据。
-
-### v5.0 - AI 幽灵 (The Ghost)
-
-- [ ] **时光对话**: 与基于你过去日记训练的 AI 对话。
-- [ ] **神经搜索**: 基于语义的模糊记忆检索。
-
-## 📂 目录结构
-
-```
-neural/
-├── backend/          # Spring Boot 后端源码
-├── frontend/         # Vue 3 前端源码
-├── nginx/            # Nginx 网关配置
-├── docker-compose.yml # 容器编排文件
-├── docs/             # 愿景与需求文档
-└── README.md         # 说明文档
+```bash
+cd backend
+mvn clean package -DskipTests
 ```
 
-## 📄 许可证
+打包完成后会生成 `backend/target/neural-backend-1.0.0.jar`
 
-MIT License
+## 🚀 部署步骤
+
+### 使用外部数据库部署（推荐）
+
+适用于：已有 PostgreSQL 数据库，只部署应用
+
+## 📁 上传文件清单
+
+需要上传到服务器的文件/目录：
+
+```
+NEURAL/
+├── backend/
+│   ├── target/
+│   │   └── neural-backend-1.0.0.jar  ✅ 必需
+│   └── Dockerfile             ✅ 必需
+├── frontend/
+│   └── dist/                          ✅ 必需（整个目录）
+├── nginx/
+│   └── default.conf                   ✅ 必需
+├── data/
+│   └── uploads/
+├── docker-compose.yml
+├── .env                               ✅ 必需（根据模板创建）
+```
+
+## ⚙️ 环境变量配置
+
+编辑 `.env` 文件：
+
+```bash
+# 数据库配置
+DB_HOST=host.docker.internal    # 使用 Docker 容器名称连接数据库（推荐）
+DB_PORT=5432
+DB_NAME=neural_db
+DB_USER=neural_user
+DB_PASS=强密码123456           # ⚠️ 修改为强密码
+
+# 管理员密码
+ROOT_PASSWORD=admin123456        # ⚠️ 修改为强密码
+```
+
+## 启动容器
+
+```bash
+docker compose up -d --build
+```

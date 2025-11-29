@@ -1,22 +1,11 @@
-# 多阶段构建
-# 阶段1: 构建
-FROM maven:3.9-eclipse-temurin-21 AS build
-WORKDIR /app
+# 简化版 Dockerfile - 用于已打包好的 JAR 文件
+# 使用场景：本地已经构建好 JAR，直接上传到服务器部署
 
-# 复制 pom.xml 并下载依赖
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-
-# 复制源代码并构建
-COPY src ./src
-RUN mvn clean package -DskipTests
-
-# 阶段2: 运行
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# 从构建阶段复制 JAR 文件
-COPY --from=build /app/target/*.jar app.jar
+# 从 target 目录复制已构建好的 JAR 文件
+COPY target/*.jar app.jar
 
 # 创建上传目录
 RUN mkdir -p /app/uploads
