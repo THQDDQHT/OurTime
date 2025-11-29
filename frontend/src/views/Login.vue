@@ -1,38 +1,37 @@
 <template>
   <div
-    class="login-container min-h-screen flex items-center justify-center bg-dark-bg relative overflow-hidden"
+    class="min-h-screen flex items-center justify-center bg-dark-bg relative overflow-hidden"
   >
     <!-- 动态背景 -->
     <div class="cyber-grid"></div>
-    <div class="scan-overlay"></div>
 
-    <div class="login-content w-full max-w-[460px] z-10 flex flex-col gap-5">
-      <div class="brand-area text-center">
+    <div class="w-full max-w-[460px] z-10 flex flex-col gap-5">
+      <div class="text-center">
         <h1
-          class="brand-title font-orbitron text-6xl text-white text-shadow-glow-blue tracking-[4px] mb-1"
+          class="font-orbitron text-6xl text-white text-shadow-glow-blue tracking-[4px] mb-1"
         >
           NEURAL
         </h1>
         <p
-          class="brand-subtitle font-share-tech-mono text-neon-blue tracking-[2px] text-xs opacity-80"
+          class="font-share-tech-mono text-neon-blue tracking-[2px] text-xs opacity-80"
         >
           时空终端 // 需要访问权限
         </p>
       </div>
 
       <n-card
-        class="login-card border border-neon-blue/30 shadow-glow-blue"
+        class="border border-neon-blue/30 shadow-glow-blue"
         :bordered="false"
         size="huge"
       >
         <div
-          class="card-header flex items-center justify-center gap-2.5 mb-7 border-b border-neon-blue/20 pb-4"
+          class="flex items-center justify-center gap-2.5 mb-7 border-b border-neon-blue/20 pb-4"
         >
           <div
             class="status-light w-2 h-2 bg-gray-700 rounded-full"
             :class="{ active: !loading }"
           ></div>
-          <n-text class="card-title font-share-tech-mono text-xl text-white">{{
+          <n-text class="font-share-tech-mono text-xl text-white">{{
             isRegisterMode ? "新用户注册程序" : "身份验证程序"
           }}</n-text>
         </div>
@@ -44,10 +43,10 @@
               placeholder="输入用户名"
               :disabled="loading"
               @keyup.enter="handleSubmit"
-              class="cyber-input font-share-tech-mono"
+              class="font-share-tech-mono"
             >
               <template #prefix>
-                <span class="input-icon text-neon-blue">></span>
+                <span class="text-neon-blue">></span>
               </template>
             </n-input>
           </n-form-item>
@@ -60,16 +59,16 @@
               placeholder="输入访问密钥"
               :disabled="loading"
               @keyup.enter="handleSubmit"
-              class="cyber-input font-share-tech-mono"
+              class="font-share-tech-mono"
             >
               <template #prefix>
-                <span class="input-icon text-neon-blue">#</span>
+                <span class="text-neon-blue">#</span>
               </template>
             </n-input>
           </n-form-item>
         </n-form>
 
-        <div class="actions">
+        <div>
           <n-button
             type="primary"
             block
@@ -81,10 +80,10 @@
             {{ isRegisterMode ? "启动注册" : "连接核心" }}
           </n-button>
 
-          <div class="toggle-mode text-center mt-4">
+          <div class="text-center mt-4">
             <span
               @click="toggleMode"
-              class="cyber-link font-share-tech-mono text-neon-blue/60 cursor-pointer text-sm transition-all duration-300 hover:text-neon-blue hover:text-shadow-glow-blue-sm"
+              class="font-share-tech-mono text-neon-blue/60 cursor-pointer text-sm transition-all duration-300 hover:text-neon-blue hover:text-shadow-glow-blue-sm"
             >
               {{ isRegisterMode ? "[ 切换至登录 ]" : "[ 创建新身份 ]" }}
             </span>
@@ -92,10 +91,10 @@
         </div>
       </n-card>
 
-      <div class="footer">
+      <div>
         <n-text
           depth="3"
-          class="copyright font-share-tech-mono text-[0.7rem] text-white/30"
+          class="font-share-tech-mono text-[0.7rem] text-white/30"
           >系统版本 3.0 // 记忆核心在线</n-text
         >
       </div>

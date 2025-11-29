@@ -1,6 +1,6 @@
 <template>
   <div
-    class="tech-reactor-player relative w-full h-full flex flex-col items-center justify-center font-share-tech-mono perspective-[1000px]"
+    class="relative w-full h-full flex flex-col items-center justify-center font-share-tech-mono perspective-[1000px]"
   >
     <!-- 反应堆主体 -->
     <div class="reactor-assembly">

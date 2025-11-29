@@ -1,10 +1,10 @@
 <template>
-  <div class="album-list-container py-5">
+  <div class="py-5">
     <div
-      class="section-header flex justify-between items-center mb-6 px-2 border-b border-neon-blue/20 pb-2.5"
+      class="flex justify-between items-center mb-6 px-2 border-b border-neon-blue/20 pb-2.5"
     >
       <n-text
-        class="section-title font-share-tech-mono text-2xl text-neon-blue text-shadow-glow-blue-sm"
+        class="font-share-tech-mono text-2xl text-neon-blue text-shadow-glow-blue-sm"
         >归档模块 // 相册集</n-text
       >
       <n-button type="primary" dashed @click="showCreateModal = true">
@@ -29,7 +29,7 @@
     <n-spin :show="loading" v-else>
       <div
         v-if="albums.length > 0"
-        class="albums-grid grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-6"
+        class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-6"
       >
         <div
           v-for="album in albums"
@@ -53,7 +53,7 @@
               preview-disabled
               class="cover-image w-full h-full opacity-80 grayscale-[40%] transition-all duration-500"
             />
-            <div v-else class="cover-placeholder">
+            <div v-else>
               <n-icon size="48" :depth="3" class="text-gray-700">
                 <images-outline />
               </n-icon>
@@ -70,37 +70,36 @@
             </div>
           </div>
 
-          <div class="card-info p-3 border-b border-neon-blue/10">
-            <div class="info-header flex justify-between items-center mb-1">
+          <div class="p-3 border-b border-neon-blue/10">
+            <div class="flex justify-between items-center mb-1">
               <n-text
-                class="album-name text-white font-rajdhani font-bold text-lg uppercase"
+                class="text-white font-rajdhani font-bold text-lg uppercase"
                 >{{ album.name }}</n-text
               >
-              <n-text
-                class="id-tag text-[10px] text-neon-purple font-share-tech-mono"
+              <n-text class="text-[10px] text-neon-purple font-share-tech-mono"
                 >编号:{{ album.id.toString().padStart(4, "0") }}</n-text
               >
             </div>
-            <n-text class="date text-[10px] text-white/50"
+            <n-text class="text-[10px] text-white/50"
               >创建于: {{ formatDate(album.createdAt) }}</n-text
             >
           </div>
 
           <div
-            class="card-footer p-2.5 px-3 flex justify-between items-center min-h-[40px]"
+            class="p-2.5 px-3 flex justify-between items-center min-h-[40px]"
           >
             <n-text
-              class="description text-xs text-neon-blue/70 whitespace-nowrap overflow-hidden text-ellipsis max-w-[70%]"
+              class="text-xs text-neon-blue/70 whitespace-nowrap overflow-hidden text-ellipsis max-w-[70%]"
               v-if="album.description"
             >
               {{ album.description }}
             </n-text>
-            <div class="action-buttons flex gap-1">
+            <div class="flex gap-1">
               <n-button
                 size="tiny"
                 text
                 @click.stop="handleEdit(album)"
-                class="action-icon text-white/50 hover:text-neon-blue"
+                class="text-white/50 hover:text-neon-blue"
               >
                 <template #icon><create-outline /></template>
               </n-button>
@@ -109,7 +108,7 @@
                 text
                 type="error"
                 @click.stop="handleDelete(album)"
-                class="action-icon delete hover:text-neon-red"
+                class="hover:text-neon-red"
               >
                 <template #icon><trash-outline /></template>
               </n-button>
@@ -173,13 +172,9 @@
                   <span>更新图像</span>
                 </div>
               </div>
-              <n-upload-dragger v-else class="cover-dragger">
-                <div class="dragger-content">
-                  <n-icon
-                    size="32"
-                    :depth="3"
-                    class="upload-icon text-neon-blue"
-                  >
+              <n-upload-dragger v-else>
+                <div>
+                  <n-icon size="32" :depth="3" class="text-neon-blue">
                     <add-outline />
                   </n-icon>
                 </div>
@@ -191,15 +186,8 @@
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <n-button ghost @click="handleCancel" class="cancel-btn"
-            >终止</n-button
-          >
-          <n-button
-            type="primary"
-            :loading="submitting"
-            @click="handleSubmit"
-            class="cyber-btn"
-          >
+          <n-button ghost @click="handleCancel">终止</n-button>
+          <n-button type="primary" :loading="submitting" @click="handleSubmit">
             {{ editingAlbum ? "保存配置" : "执行" }}
           </n-button>
         </div>

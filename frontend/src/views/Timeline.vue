@@ -1,6 +1,6 @@
 <template>
   <div
-    class="timeline-container w-screen h-screen bg-dark-bg overflow-hidden relative font-rajdhani text-neon-blue flex flex-col"
+    class="w-screen h-screen bg-dark-bg overflow-hidden relative font-rajdhani text-neon-blue flex flex-col"
   >
     <!-- 背景层 (复用 DesktopHome 风格) -->
     <div class="perspective-grid"></div>
@@ -10,29 +10,27 @@
 
     <!-- 顶部导航 -->
     <div
-      class="timeline-header h-[60px] px-8 flex justify-between items-center bg-black/80 border-b border-neon-blue/30 z-[100]"
+      class="h-[60px] px-8 flex justify-between items-center bg-black/80 border-b border-neon-blue/30 z-[100]"
     >
       <div
-        class="back-btn cursor-pointer flex items-center gap-2.5 font-share-tech-mono text-white/70 transition-colors duration-300 hover:text-neon-blue hover:text-shadow-glow-blue-sm"
+        class="cursor-pointer flex items-center gap-2.5 font-share-tech-mono text-white/70 transition-colors duration-300 hover:text-neon-blue hover:text-shadow-glow-blue-sm"
         @click="router.back()"
       >
         <span><</span>
         <span>RETURN_TO_DESKTOP // 返回桌面</span>
       </div>
-      <div
-        class="header-title font-share-tech-mono text-lg tracking-[2px] text-neon-blue"
-      >
+      <div class="font-share-tech-mono text-lg tracking-[2px] text-neon-blue">
         CHRONO_ARCHIVE // 时间轴
       </div>
     </div>
 
     <!-- 时间轴主体 -->
     <div
-      class="timeline-content flex-1 relative overflow-y-auto overflow-x-hidden py-10 z-10"
+      class="flex-1 relative overflow-y-auto overflow-x-hidden py-10 z-10"
       ref="scrollContainer"
     >
       <div
-        class="moments-list w-full max-w-[1000px] mx-auto relative min-h-full pb-24"
+        class="w-full max-w-[1000px] mx-auto relative min-h-full pb-24"
         v-if="moments.length > 0"
       >
         <!-- 极简激光中轴线 -->
@@ -67,12 +65,12 @@
           <div
             class="moment-card bg-gradient-to-br from-dark-bg/90 to-[rgba(10,21,37,0.9)] border border-neon-blue/30 rounded p-4 w-4/5 max-w-[400px] relative transition-all duration-300 mt-10 shadow-[0_4px_15px_rgba(0,0,0,0.5)] backdrop-blur-[10px] hover:border-neon-blue hover:shadow-glow-blue-sm hover:-translate-y-0.5"
           >
-            <div class="card-body text-base text-white leading-relaxed">
-              <p class="moment-text mb-2.5 break-all">{{ moment.content }}</p>
+            <div class="text-base text-white leading-relaxed">
+              <p class="mb-2.5 break-all">{{ moment.content }}</p>
 
               <!-- 图片展示 (如果有) -->
               <div
-                class="moment-photos grid grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 mt-2.5"
+                class="grid grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 mt-2.5"
                 v-if="moment.photos && moment.photos.length > 0"
               >
                 <div
@@ -93,8 +91,8 @@
         </div>
       </div>
 
-      <div class="empty-state flex justify-center mt-24" v-else>
-        <div class="empty-text font-share-tech-mono text-white/30 text-lg">
+      <div class="flex justify-center mt-24" v-else>
+        <div class="font-share-tech-mono text-white/30 text-lg">
           NO_DATA_FOUND // 暂无时间记录
         </div>
       </div>

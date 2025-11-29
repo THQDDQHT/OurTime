@@ -1,10 +1,8 @@
 <template>
   <div
-    class="memory-helix-container w-full h-full relative flex flex-col overflow-hidden perspective-[800px] font-share-tech-mono"
+    class="w-full h-full relative flex flex-col overflow-hidden perspective-[800px] font-share-tech-mono"
   >
-    <div
-      class="helix-viewport flex-1 relative flex justify-center items-center preserve-3d"
-    >
+    <div class="flex-1 relative flex justify-center items-center preserve-3d">
       <div
         class="helix-structure"
         :style="{ transform: `rotateY(${rotation}deg)` }"

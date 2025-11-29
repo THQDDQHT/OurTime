@@ -1,6 +1,6 @@
 <template>
   <div
-    class="desktop-container w-screen h-screen bg-dark-bg overflow-hidden relative font-rajdhani text-neon-blue flex flex-col"
+    class="w-screen h-screen bg-dark-bg overflow-hidden relative font-rajdhani text-neon-blue flex flex-col"
   >
     <!-- 背景层：Deep Space Grid -->
     <div class="perspective-grid"></div>
@@ -10,10 +10,10 @@
 
     <!-- 顶部状态栏 -->
     <div
-      class="status-bar h-10 w-full bg-black/80 border-b border-neon-blue/30 flex items-center justify-end px-5 gap-5 z-[100] font-share-tech-mono text-xs"
+      class="h-10 w-full bg-black/80 border-b border-neon-blue/30 flex items-center justify-end px-5 gap-5 z-[100] font-share-tech-mono text-xs"
     >
       <div
-        class="logout-trigger flex items-center gap-2 cursor-pointer text-neon-red border border-neon-red/30 px-2 py-0.5 rounded transition-all duration-300 hover:bg-neon-red/10 hover:shadow-glow-red"
+        class="flex items-center gap-2 cursor-pointer text-neon-red border border-neon-red/30 px-2 py-0.5 rounded transition-all duration-300 hover:bg-neon-red/10 hover:shadow-glow-red"
         @click="handleLogout"
       >
         <div class="icon-power"></div>
@@ -23,25 +23,25 @@
 
     <!-- 主控制台布局 (Grid Layout) -->
     <div
-      class="main-console flex-1 grid grid-cols-[300px_1fr_300px] gap-5 p-10 perspective-[1000px] z-10"
+      class="flex-1 grid grid-cols-[300px_1fr_300px] gap-5 p-10 perspective-[1000px] z-10"
     >
       <!-- 左翼：数据档案 (Left Wing) -->
-      <div class="console-column left-wing relative flex flex-col">
+      <div class="relative flex flex-col">
         <div
-          class="panel-header flex justify-between items-center mb-2.5 border-b-2 border-neon-blue/30 pb-1"
+          class="flex justify-between items-center mb-2.5 border-b-2 border-neon-blue/30 pb-1"
         >
           <span
-            class="panel-title font-share-tech-mono text-sm text-neon-blue/70"
+            class="font-share-tech-mono text-sm text-neon-blue/70"
             >ARCHIVE_DATA // 记忆库</span
           >
           <div class="panel-deco"></div>
         </div>
         <div
-          class="panel-content flex-1 bg-panel-bg border border-neon-blue/20 backdrop-blur-[5px] relative transition-all duration-300 flex flex-col justify-between p-5 cursor-pointer hover:border-neon-blue hover:shadow-glow-blue-sm"
+          class="flex-1 bg-panel-bg border border-neon-blue/20 backdrop-blur-[5px] relative transition-all duration-300 flex flex-col justify-between p-5 cursor-pointer hover:border-neon-blue hover:shadow-glow-blue-sm"
         >
           <DesktopMemoryHelix @open-archive="showAlbumModal = true" />
           <div
-            class="archive-action mt-auto w-full pt-4 border-t border-neon-blue/10"
+            class="mt-auto w-full pt-4 border-t border-neon-blue/10"
           >
             <n-button
               class="font-share-tech-mono font-bold tracking-wide transition-all duration-300"
@@ -60,7 +60,7 @@
 
       <!-- 中央核心：时空罗盘 (Center Core) -->
       <div
-        class="console-column center-core relative flex flex-col items-center justify-center cursor-pointer"
+        class="relative flex flex-col items-center justify-center cursor-pointer"
         @click="router.push('/timeline')"
       >
         <div class="core-ring-outer"></div>
@@ -73,43 +73,43 @@
             :style="{ transform: `rotate(${secondsDeg}deg)` }"
           ></div>
 
-          <div class="time-display text-center z-10">
-            <div class="time-label text-xs text-white/50 tracking-[2px]">
+          <div class="text-center z-10">
+            <div class="text-xs text-white/50 tracking-[2px]">
               CURRENT_CYCLE
             </div>
             <div
-              class="time-value text-[64px] font-bold text-white text-shadow-glow-white leading-none tabular-nums"
+              class="text-[64px] font-bold text-white text-shadow-glow-white leading-none tabular-nums"
             >
               {{ timeString }}
             </div>
-            <div class="date-value text-lg text-neon-blue">
+            <div class="text-lg text-neon-blue">
               {{ dateString }}
             </div>
           </div>
         </div>
 
         <div
-          class="core-status mt-10 py-1 px-4 bg-neon-blue/10 border border-neon-blue rounded-[20px]"
+          class="mt-10 py-1 px-4 bg-neon-blue/10 border border-neon-blue rounded-[20px]"
         >
-          <span class="status-text font-share-tech-mono text-xs tracking-[2px]"
+          <span class="font-share-tech-mono text-xs tracking-[2px]"
             >TEMPORAL FLUX: STABLE</span
           >
         </div>
       </div>
 
       <!-- 右翼：声波反应堆 (Right Wing) -->
-      <div class="console-column right-wing relative flex flex-col">
+      <div class="relative flex flex-col">
         <div
-          class="panel-header flex justify-between items-center mb-2.5 border-b-2 border-neon-blue/30 pb-1"
+          class="flex justify-between items-center mb-2.5 border-b-2 border-neon-blue/30 pb-1"
         >
           <span
-            class="panel-title font-share-tech-mono text-sm text-neon-blue/70"
+            class="font-share-tech-mono text-sm text-neon-blue/70"
             >SONIC_REACTOR // 播放器</span
           >
           <div class="panel-deco"></div>
         </div>
         <div
-          class="panel-content flex-1 bg-panel-bg border border-neon-blue/20 backdrop-blur-[5px] relative transition-all duration-300 p-2.5 overflow-hidden hover:border-neon-blue hover:shadow-glow-blue-sm"
+          class="flex-1 bg-panel-bg border border-neon-blue/20 backdrop-blur-[5px] relative transition-all duration-300 p-2.5 overflow-hidden hover:border-neon-blue hover:shadow-glow-blue-sm"
         >
           <DesktopTechPlayer />
         </div>
@@ -118,23 +118,23 @@
 
     <!-- 底部指令台 (Bottom Console) -->
     <div
-      class="bottom-console h-24 px-10 pb-5 z-10"
+      class="h-24 px-10 pb-5 z-10"
       @click="showCreateModal = true"
     >
       <div
-        class="console-frame w-full h-full bg-panel-bg border border-neon-blue/30 backdrop-blur-[5px] flex items-center px-8 justify-between cursor-pointer transition-all duration-300 hover:bg-dark-bg/80 hover:shadow-[0_-5px_20px_rgba(0,243,255,0.1)]"
+        class="w-full h-full bg-panel-bg border border-neon-blue/30 backdrop-blur-[5px] flex items-center px-8 justify-between cursor-pointer transition-all duration-300 hover:bg-dark-bg/80 hover:shadow-[0_-5px_20px_rgba(0,243,255,0.1)]"
       >
         <div
-          class="input-area flex-1 ml-5 font-share-tech-mono text-lg text-neon-blue"
+          class="flex-1 ml-5 font-share-tech-mono text-lg text-neon-blue"
         >
-          <span class="prompt mr-2.5">></span>
-          <span class="cursor">_</span>
-          <span class="placeholder text-white/30 text-sm">
+          <span class="mr-2.5">></span>
+          <span>_</span>
+          <span class="text-white/30 text-sm">
             点击此处录入新的时空节点数据...</span
           >
         </div>
         <div
-          class="console-stats flex flex-col font-share-tech-mono text-[10px] text-white/40 border-l border-white/10 pl-2.5"
+          class="flex flex-col font-share-tech-mono text-[10px] text-white/40 border-l border-white/10 pl-2.5"
         >
           <span>MEM: 64TB</span>
           <span>CPU: 12%</span>

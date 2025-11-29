@@ -1,6 +1,6 @@
 <template>
   <div
-    class="album-detail-container min-h-screen bg-dark-bg relative overflow-hidden"
+    class="min-h-screen bg-dark-bg relative overflow-hidden"
   >
     <div class="cyber-grid-bg"></div>
     <n-layout class="layout-bg">
@@ -8,8 +8,8 @@
         class="h-16 px-6 flex items-center backdrop-blur-md bg-black/40 border-b border-neon-blue/20"
         bordered
       >
-        <div class="header-content w-full flex justify-between items-center">
-          <div class="left-actions flex items-center gap-4">
+        <div class="w-full flex justify-between items-center">
+          <div class="flex items-center gap-4">
             <n-button
               circle
               quaternary
@@ -20,15 +20,15 @@
                 <n-icon><arrow-back-outline /></n-icon>
               </template>
             </n-button>
-            <div class="page-title-wrapper relative">
+            <div class="relative">
               <n-text
-                class="page-title font-share-tech-mono text-lg text-neon-blue tracking-wider"
+                class="font-share-tech-mono text-lg text-neon-blue tracking-wider"
                 >档案详情 // 访问模式</n-text
               >
               <div class="scan-line"></div>
             </div>
           </div>
-          <div class="header-actions">
+          <div>
             <n-button type="primary" @click="handleCreate">
               <template #icon>
                 <n-icon><add-outline /></n-icon>
@@ -39,11 +39,11 @@
         </div>
       </n-layout-header>
 
-      <n-layout-content class="content p-6" :native-scrollbar="false">
-        <div class="main-wrapper max-w-6xl mx-auto">
+      <n-layout-content class="p-6" :native-scrollbar="false">
+        <div class="max-w-6xl mx-auto">
           <!-- Album Info Card -->
           <div
-            class="album-info relative bg-gradient-to-br from-dark-bg/80 to-[rgba(10,21,37,0.8)] border border-neon-blue/30 rounded-lg p-6 mb-6 backdrop-blur-sm flex gap-6 transition-all duration-300 hover:border-neon-blue hover:shadow-glow-blue-sm"
+            class="relative bg-gradient-to-br from-dark-bg/80 to-[rgba(10,21,37,0.8)] border border-neon-blue/30 rounded-lg p-6 mb-6 backdrop-blur-sm flex gap-6 transition-all duration-300 hover:border-neon-blue hover:shadow-glow-blue-sm"
             v-if="album"
           >
             <div class="corner-deco tl"></div>
@@ -52,35 +52,35 @@
             <div class="corner-deco br"></div>
 
             <div
-              class="album-cover-wrapper w-48 h-48 flex-shrink-0 relative overflow-hidden rounded border border-neon-blue/40 bg-black"
+              class="w-48 h-48 flex-shrink-0 relative overflow-hidden rounded border border-neon-blue/40 bg-black"
             >
               <n-image
                 v-if="album.coverUrl"
                 :src="resolveUploadUrl(album.coverUrl)"
                 object-fit="cover"
-                class="album-cover w-full h-full"
+                class="w-full h-full"
               />
               <div
                 v-else
-                class="album-cover-placeholder w-full h-full flex items-center justify-center"
+                class="w-full h-full flex items-center justify-center"
               >
                 <n-icon size="48" color="#333"><images-outline /></n-icon>
               </div>
               <div class="scan-overlay"></div>
             </div>
-            <div class="album-meta flex-1 flex flex-col justify-center">
+            <div class="flex-1 flex flex-col justify-center">
               <h1
-                class="album-name font-rajdhani text-4xl font-bold text-white mb-2 uppercase tracking-wide"
+                class="font-rajdhani text-4xl font-bold text-white mb-2 uppercase tracking-wide"
                 :data-text="album.name"
               >
                 {{ album.name }}
               </h1>
               <p
-                class="album-desc text-white/70 text-sm mb-4 font-share-tech-mono"
+                class="text-white/70 text-sm mb-4 font-share-tech-mono"
               >
                 {{ album.description || "元数据缺失..." }}
               </p>
-              <div class="album-stats">
+              <div>
                 <n-tag
                   size="small"
                   class="bg-neon-blue/10 text-neon-blue border border-neon-blue/30"
@@ -98,7 +98,7 @@
             animated
           >
             <n-tab-pane name="timeline" tab="时间轴回溯">
-              <div class="timeline-container py-5 max-w-[800px] mx-auto">
+              <div class="py-5 max-w-[800px] mx-auto">
                 <n-spin :show="loading">
                   <n-timeline v-if="moments.length > 0" size="large">
                     <n-timeline-item
@@ -127,7 +127,7 @@
                   </div>
                 </n-spin>
 
-                <div v-if="hasMore" class="load-more text-center mt-12 pb-8">
+                <div v-if="hasMore" class="text-center mt-12 pb-8">
                   <n-button
                     text
                     @click="loadMore"
@@ -144,24 +144,24 @@
             </n-tab-pane>
 
             <n-tab-pane name="photowall" tab="视觉矩阵">
-              <div class="photowall-container py-5">
+              <div class="py-5">
                 <n-spin :show="loading">
                   <div
                     v-if="allPhotos.length > 0"
-                    class="masonry-grid grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4"
+                    class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4"
                   >
                     <n-image-group>
                       <div
                         v-for="photo in allPhotos"
                         :key="photo.id"
-                        class="masonry-item cyber-frame border border-neon-blue/20 bg-black/30 relative overflow-hidden transition-all duration-300"
+                        class="cyber-frame border border-neon-blue/20 bg-black/30 relative overflow-hidden transition-all duration-300"
                       >
-                        <div class="image-wrapper relative">
+                        <div class="relative">
                           <n-image
                             :src="resolveUploadUrl(photo.filePath)"
                             object-fit="cover"
                             preview-disabled
-                            class="photo-image w-full block contrast-110 saturate-90"
+                            class="w-full block contrast-110 saturate-90"
                             lazy
                           />
                           <div class="image-overlay"></div>
@@ -173,10 +173,10 @@
                   <n-empty v-else description="无视觉数据" />
                 </n-spin>
 
-                <div
-                  v-if="hasMore && allPhotos.length > 0"
-                  class="load-more text-center mt-12 pb-8"
-                >
+                  <div
+                    v-if="hasMore && allPhotos.length > 0"
+                    class="text-center mt-12 pb-8"
+                  >
                   <n-button
                     text
                     @click="loadMore"
