@@ -14,11 +14,12 @@
             :class="{ clickable: !!moment.albumId }"
             @click.stop="handleAlbumClick"
           >
-            <n-icon size="12"><folder-outline /></n-icon> 索引: {{ moment.albumName }}
+            <n-icon size="12"><folder-outline /></n-icon> 索引:
+            {{ moment.albumName }}
           </span>
         </div>
       </div>
-      
+
       <n-popconfirm
         @positive-click="handleDelete"
         positive-text="确认"
@@ -97,10 +98,10 @@ const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
   // 格式化为更科技感的日期：2023.12.25 - 14:30:00
   const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  const hh = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  const hh = String(date.getHours()).padStart(2, "0");
+  const min = String(date.getMinutes()).padStart(2, "0");
   return `${yyyy}.${mm}.${dd} // ${hh}:${min}`;
 };
 
@@ -113,8 +114,11 @@ const getGridClass = (count: number) => {
 
 const handleAlbumClick = () => {
   if (props.moment.albumId) {
-    if (router.currentRoute.value.name === 'AlbumDetail' && Number(router.currentRoute.value.params.id) === props.moment.albumId) {
-        return;
+    if (
+      router.currentRoute.value.name === "AlbumDetail" &&
+      Number(router.currentRoute.value.params.id) === props.moment.albumId
+    ) {
+      return;
     }
     router.push(`/albums/${props.moment.albumId}`);
   }
@@ -151,9 +155,12 @@ const handleDelete = async () => {
 }
 
 .moment-card::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0; left: 0; width: 4px; height: 100%;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
   background: #00f3ff;
   opacity: 0.5;
 }
@@ -184,12 +191,15 @@ const handleDelete = async () => {
   display: flex;
   gap: 12px;
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   font-family: "Share Tech Mono";
 }
 
-.location, .album-tag {
-  display: flex; align-items: center; gap: 4px;
+.location,
+.album-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .album-tag.clickable {
@@ -202,9 +212,12 @@ const handleDelete = async () => {
 }
 
 .delete-btn {
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
 }
-.delete-btn:hover { color: #ff0055; text-shadow: 0 0 5px #ff0055; }
+.delete-btn:hover {
+  color: #ff0055;
+  text-shadow: 0 0 5px #ff0055;
+}
 
 .card-content {
   margin-bottom: 16px;
@@ -215,7 +228,7 @@ const handleDelete = async () => {
 }
 
 .content-text {
-  border-left: 2px solid rgba(255,255,255,0.1);
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
   padding-left: 10px;
 }
 
@@ -224,13 +237,21 @@ const handleDelete = async () => {
   gap: 4px;
   border: 1px solid rgba(0, 243, 255, 0.1);
   padding: 4px;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
 }
 
-.grid-1 { grid-template-columns: 1fr; }
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
-.grid-2-2 { grid-template-columns: repeat(2, 1fr); }
-.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-1 {
+  grid-template-columns: 1fr;
+}
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.grid-2-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
 
 .photo-wrapper {
   position: relative;
@@ -240,23 +261,36 @@ const handleDelete = async () => {
   cursor: pointer;
 }
 
-.grid-1 .photo-wrapper { aspect-ratio: auto; max-height: 400px; }
+.grid-1 .photo-wrapper {
+  aspect-ratio: auto;
+  max-height: 400px;
+}
 
 .photo-img {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   filter: contrast(1.1) saturate(0.9);
   transition: all 0.3s;
 }
 
 .img-overlay {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 243, 255, 0.1);
-  opacity: 0; transition: opacity 0.3s;
+  opacity: 0;
+  transition: opacity 0.3s;
   pointer-events: none;
 }
 
-.photo-wrapper:hover .photo-img { transform: scale(1.05); filter: contrast(1.2); }
-.photo-wrapper:hover .img-overlay { opacity: 1; }
-
+.photo-wrapper:hover .photo-img {
+  transform: scale(1.05);
+  filter: contrast(1.2);
+}
+.photo-wrapper:hover .img-overlay {
+  opacity: 1;
+}
 </style>

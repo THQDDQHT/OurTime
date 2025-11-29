@@ -1,5 +1,7 @@
 <template>
-  <div class="timeline-container w-screen h-screen bg-dark-bg overflow-hidden relative font-rajdhani text-neon-blue flex flex-col">
+  <div
+    class="timeline-container w-screen h-screen bg-dark-bg overflow-hidden relative font-rajdhani text-neon-blue flex flex-col"
+  >
     <!-- 背景层 (复用 DesktopHome 风格) -->
     <div class="perspective-grid"></div>
     <div class="stars"></div>
@@ -7,59 +9,80 @@
     <div class="vignette"></div>
 
     <!-- 顶部导航 -->
-    <div class="timeline-header h-[60px] px-8 flex justify-between items-center bg-black/80 border-b border-neon-blue/30 z-[100]">
-      <div class="back-btn cursor-pointer flex items-center gap-2.5 font-share-tech-mono text-white/70 transition-colors duration-300 hover:text-neon-blue hover:text-shadow-glow-blue-sm" @click="router.back()">
+    <div
+      class="timeline-header h-[60px] px-8 flex justify-between items-center bg-black/80 border-b border-neon-blue/30 z-[100]"
+    >
+      <div
+        class="back-btn cursor-pointer flex items-center gap-2.5 font-share-tech-mono text-white/70 transition-colors duration-300 hover:text-neon-blue hover:text-shadow-glow-blue-sm"
+        @click="router.back()"
+      >
         <span class="icon-arrow"><</span>
         <span>RETURN_TO_DESKTOP // 返回桌面</span>
       </div>
-      <div class="header-title font-share-tech-mono text-lg tracking-[2px] text-neon-blue">CHRONO_ARCHIVE // 时间轴</div>
+      <div
+        class="header-title font-share-tech-mono text-lg tracking-[2px] text-neon-blue"
+      >
+        CHRONO_ARCHIVE // 时间轴
+      </div>
     </div>
 
     <!-- 时间轴主体 -->
-    <div class="timeline-content flex-1 relative overflow-y-auto overflow-x-hidden py-10 z-10" ref="scrollContainer">
-      <div class="moments-list w-full max-w-[1000px] mx-auto relative min-h-full pb-24" v-if="moments.length > 0">
+    <div
+      class="timeline-content flex-1 relative overflow-y-auto overflow-x-hidden py-10 z-10"
+      ref="scrollContainer"
+    >
+      <div
+        class="moments-list w-full max-w-[1000px] mx-auto relative min-h-full pb-24"
+        v-if="moments.length > 0"
+      >
         <!-- 极简激光中轴线 -->
         <div class="central-line"></div>
         <div
           v-for="(moment, index) in moments"
           :key="moment.id"
           class="moment-item relative w-1/2 px-10 mb-16 box-border flex flex-col opacity-0 transition-all duration-[800ms]"
-          :class="{ 
-            'left': index % 2 === 0, 
-            'right': index % 2 !== 0,
-            'visible': visibleItems.has(moment.id)
+          :class="{
+            left: index % 2 === 0,
+            right: index % 2 !== 0,
+            visible: visibleItems.has(moment.id),
           }"
           :ref="(el) => observeItem(el, moment.id)"
         >
           <!-- 时间点指示器 -->
           <div class="time-node absolute top-0 flex items-center z-20">
-            <div class="node-dot w-5 h-5 flex items-center justify-center relative bg-dark-bg rounded-full z-[2]">
+            <div
+              class="node-dot w-5 h-5 flex items-center justify-center relative bg-dark-bg rounded-full z-[2]"
+            >
               <div class="dot-core"></div>
               <div class="dot-ring"></div>
             </div>
-            <div class="node-date font-share-tech-mono text-neon-blue text-sm bg-dark-bg/80 px-2.5 py-1 rounded-xl border border-neon-blue/20 whitespace-nowrap transition-all duration-300 text-shadow-glow-blue-sm hover:bg-neon-blue/10 hover:border-neon-blue hover:shadow-glow-blue-sm">{{ formatDate(moment.createdAt) }}</div>
+            <div
+              class="node-date font-share-tech-mono text-neon-blue text-sm bg-dark-bg/80 px-2.5 py-1 rounded-xl border border-neon-blue/20 whitespace-nowrap transition-all duration-300 text-shadow-glow-blue-sm hover:bg-neon-blue/10 hover:border-neon-blue hover:shadow-glow-blue-sm"
+            >
+              {{ formatDate(moment.createdAt) }}
+            </div>
           </div>
 
           <!-- 内容卡片 -->
-          <div class="moment-card bg-gradient-to-br from-dark-bg/90 to-[rgba(10,21,37,0.9)] border border-neon-blue/30 rounded p-4 w-4/5 max-w-[400px] relative transition-all duration-300 mt-10 shadow-[0_4px_15px_rgba(0,0,0,0.5)] backdrop-blur-[10px] hover:border-neon-blue hover:shadow-glow-blue-sm hover:-translate-y-0.5">
-            <!-- <div class="card-header">
-              <span class="moment-id">ID: {{ moment.id?.toString().padStart(4, '0') }}</span>
-              <div class="card-deco"></div>
-            </div> -->
-            
+          <div
+            class="moment-card bg-gradient-to-br from-dark-bg/90 to-[rgba(10,21,37,0.9)] border border-neon-blue/30 rounded p-4 w-4/5 max-w-[400px] relative transition-all duration-300 mt-10 shadow-[0_4px_15px_rgba(0,0,0,0.5)] backdrop-blur-[10px] hover:border-neon-blue hover:shadow-glow-blue-sm hover:-translate-y-0.5"
+          >
             <div class="card-body text-base text-white leading-relaxed">
               <p class="moment-text mb-2.5 break-all">{{ moment.content }}</p>
-              
+
               <!-- 图片展示 (如果有) -->
-              <div class="moment-photos grid grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 mt-2.5" v-if="moment.photos && moment.photos.length > 0">
-                <div 
-                  v-for="photo in moment.photos" 
-                  :key="photo.id" 
+              <div
+                class="moment-photos grid grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 mt-2.5"
+                v-if="moment.photos && moment.photos.length > 0"
+              >
+                <div
+                  v-for="photo in moment.photos"
+                  :key="photo.id"
                   class="photo-wrapper aspect-square overflow-hidden border border-neon-blue/30 rounded-sm"
                 >
-                  <img 
-                    :src="resolveUploadUrl(photo.filePath)" 
-                    loading="lazy" 
+                  <img
+                    :src="resolveUploadUrl(photo.filePath)"
+                    loading="lazy"
                     alt="Memory capture"
                     class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -69,70 +92,80 @@
           </div>
         </div>
       </div>
-      
+
       <div class="empty-state flex justify-center mt-24" v-else>
-        <div class="empty-text font-share-tech-mono text-white/30 text-lg">NO_DATA_FOUND // 暂无时间记录</div>
+        <div class="empty-text font-share-tech-mono text-white/30 text-lg">
+          NO_DATA_FOUND // 暂无时间记录
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import type { ComponentPublicInstance } from 'vue'
-import { getMoments } from '@/api/moment'
-import { resolveUploadUrl } from '@/utils/url'
-import type { MomentResponse } from '@/api/types'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import type { ComponentPublicInstance } from "vue";
+import { getMoments } from "@/api/moment";
+import { resolveUploadUrl } from "@/utils/url";
+import type { MomentResponse } from "@/api/types";
 
-const router = useRouter()
-const moments = ref<MomentResponse[]>([])
-const visibleItems = ref(new Set<number>())
-const scrollContainer = ref<HTMLElement | null>(null)
+const router = useRouter();
+const moments = ref<MomentResponse[]>([]);
+const visibleItems = ref(new Set<number>());
+const scrollContainer = ref<HTMLElement | null>(null);
 
 // 观察器逻辑
-const observeItem = (el: Element | ComponentPublicInstance | null, id: number) => {
-  if (!el) return
-  
+const observeItem = (
+  el: Element | ComponentPublicInstance | null,
+  id: number
+) => {
+  if (!el) return;
+
   // 简单的 IntersectionObserver
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        visibleItems.value.add(id)
-        observer.unobserve(entry.target)
-      }
-    })
-  }, {
-    threshold: 0.2,
-    root: scrollContainer.value // 指定滚动容器
-  })
-  
-  observer.observe(el as Element)
-}
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          visibleItems.value.add(id);
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.2,
+      root: scrollContainer.value, // 指定滚动容器
+    }
+  );
+
+  observer.observe(el as Element);
+};
 
 const fetchMoments = async () => {
   try {
     // 获取最近的动态，假设最多获取 100 条用于展示
-    const res = await getMoments(0, 100)
-    moments.value = res.content || []
+    const res = await getMoments(0, 100);
+    moments.value = res.content || [];
   } catch (error) {
-    console.error('Failed to fetch timeline:', error)
+    console.error("Failed to fetch timeline:", error);
   }
-}
+};
 
 const formatDate = (dateStr?: string) => {
-  if (!dateStr) return 'UNKNOWN_DATE'
-  const date = new Date(dateStr)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const time = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
-  return `${year}.${month}.${day} ${time}`
-}
+  if (!dateStr) return "UNKNOWN_DATE";
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const time = `${String(date.getHours()).padStart(2, "0")}:${String(
+    date.getMinutes()
+  ).padStart(2, "0")}`;
+  return `${year}.${month}.${day} ${time}`;
+};
 
 onMounted(() => {
-  fetchMoments()
-})
+  fetchMoments();
+});
 </script>
 
 <style scoped>
@@ -198,28 +231,13 @@ onMounted(() => {
   pointer-events: none;
 }
 
-/*
-.central-line::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -10px;
-  right: -10px;
-  height: 100%;
-  background-image: 
-    radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-    radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-    radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 3px);
-  background-size: 250px 250px, 150px 150px, 100px 100px;
-  background-position: 0 0, 20px 40px, -10px 60px;
-  opacity: 0.6;
-  animation: galaxy-flow 60s linear infinite;
-}
-*/
-
 @keyframes galaxy-flow {
-  0% { background-position: 0 0, 20px 40px, -10px 60px; }
-  100% { background-position: 0 1000px, 20px 1040px, -10px 1060px; }
+  0% {
+    background-position: 0 0, 20px 40px, -10px 60px;
+  }
+  100% {
+    background-position: 0 1000px, 20px 1040px, -10px 1060px;
+  }
 }
 
 .dot-core {
@@ -227,9 +245,7 @@ onMounted(() => {
   height: 6px;
   background: #fff;
   border-radius: 50%;
-  box-shadow: 
-    0 0 8px #fff, 
-    0 0 15px #00f3ff;
+  box-shadow: 0 0 8px #fff, 0 0 15px #00f3ff;
   z-index: 2;
   animation: star-pulse 2s infinite alternate;
 }
@@ -243,8 +259,9 @@ onMounted(() => {
   border-radius: 0;
   animation: star-spin 20s linear infinite;
 }
-.dot-ring::before, .dot-ring::after {
-  content: '';
+.dot-ring::before,
+.dot-ring::after {
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -262,59 +279,23 @@ onMounted(() => {
 }
 
 @keyframes star-pulse {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1.2); opacity: 0.8; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
 }
 @keyframes star-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
-
-/* Connector Lines (Removed) */
-/*
-.moment-card::before {
-  content: '';
-  position: absolute;
-  top: -40px;
-  height: 40px;
-  width: 50px;
-  pointer-events: none;
-  border-bottom: 1px dashed rgba(0, 243, 255, 0.5);
-}
-
-.moment-item.left .moment-card::before {
-  right: -50px; 
-  border-right: 1px dashed rgba(0, 243, 255, 0.5);
-  border-bottom-right-radius: 15px;
-  background: transparent;
-}
-
-.moment-item.right .moment-card::before {
-  left: -50px;
-  border-left: 1px dashed rgba(0, 243, 255, 0.5);
-  border-bottom-left-radius: 15px;
-  background: transparent;
-}
-
-.moment-card::after {
-  content: '';
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: #00f3ff;
-  box-shadow: 0 0 5px #00f3ff;
-  border-radius: 50%;
-}
-.moment-item.left .moment-card::after {
-  top: -2px;
-  right: -2px;
-}
-.moment-item.right .moment-card::after {
-  top: -2px;
-  left: -2px;
-}
-*/
-
 
 .card-header {
   display: flex;
@@ -380,7 +361,7 @@ onMounted(() => {
   .moment-item.visible {
     transform: none !important;
   }
-  
+
   .moment-item.left .time-node,
   .moment-item.right .time-node {
     left: 10px;
@@ -388,18 +369,17 @@ onMounted(() => {
     flex-direction: row;
     top: 0;
   }
-  
+
   .moment-item.left .node-date,
   .moment-item.right .node-date {
     margin-left: 25px !important;
     margin-right: 0 !important;
     font-size: 12px;
   }
-  
+
   .moment-card {
     width: 100%;
     max-width: none;
   }
 }
 </style>
-

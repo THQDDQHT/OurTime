@@ -1,6 +1,10 @@
 <template>
-  <div class="memory-helix-container w-full h-full relative flex flex-col overflow-hidden perspective-[800px] font-share-tech-mono">
-    <div class="helix-viewport flex-1 relative flex justify-center items-center preserve-3d">
+  <div
+    class="memory-helix-container w-full h-full relative flex flex-col overflow-hidden perspective-[800px] font-share-tech-mono"
+  >
+    <div
+      class="helix-viewport flex-1 relative flex justify-center items-center preserve-3d"
+    >
       <div
         class="helix-structure"
         :style="{ transform: `rotateY(${rotation}deg)` }"
@@ -111,21 +115,21 @@ const fetchPhotos = async () => {
 // 计算每个节点的3D位置 (双螺旋逻辑)
 const getNodeStyle = (index: number) => {
   const total = nodes.value.length;
-  
+
   // 两个为一组（层）
   const layerIndex = Math.floor(index / 2);
   const isSecondStrand = index % 2 === 1;
-  
+
   const totalLayers = Math.ceil(total / 2);
   const ySpacing = 22; // 减小垂直间距，更紧凑
-  
+
   // 垂直位置
   const yOffset = (layerIndex - totalLayers / 2) * ySpacing;
-  
+
   // 旋转角度: 每一层旋转一定角度
-  const angleStep = 25; 
+  const angleStep = 25;
   let angle = layerIndex * angleStep;
-  
+
   // 第二条链相位偏移 180 度
   if (isSecondStrand) {
     angle += 180;
@@ -242,7 +246,7 @@ onUnmounted(() => {
   background: linear-gradient(to left, rgba(0, 243, 255, 0.5), transparent);
   opacity: 0.2;
   transform-origin: right center;
-  transform: rotateY(-90deg); 
+  transform: rotateY(-90deg);
   pointer-events: none;
 }
 </style>
