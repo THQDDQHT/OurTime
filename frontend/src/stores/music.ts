@@ -6,8 +6,7 @@ import { resolveUploadUrl } from '@/utils/url'
 
 export interface Song {
   id: number
-  title: string
-  artist: string
+  title?: string
   url: string
   cover?: string
 }

@@ -34,7 +34,11 @@
         </n-form-item>
 
         <n-form-item path="location" label="地理坐标">
-          <n-input v-model:value="form.location" placeholder="经纬度 或 城市名" class="cyber-input" />
+          <n-input
+            v-model:value="form.location"
+            placeholder="经纬度 或 城市名"
+            class="cyber-input"
+          />
         </n-form-item>
       </div>
 
@@ -60,8 +64,8 @@
           <n-upload-dragger>
             <div class="upload-content">
               <n-icon size="48" :depth="3" class="upload-icon">
-                 <!-- 上传图标 -->
-                 <div class="upload-symbol">+</div>
+                <!-- 上传图标 -->
+                <div class="upload-symbol">+</div>
               </n-icon>
             </div>
           </n-upload-dragger>
@@ -72,7 +76,12 @@
     <template #footer>
       <div class="actions">
         <n-button ghost @click="handleClose" class="cancel-btn">中止</n-button>
-        <n-button type="primary" :loading="loading" @click="handleSubmit" class="cyber-btn">
+        <n-button
+          type="primary"
+          :loading="loading"
+          @click="handleSubmit"
+          class="cyber-btn"
+        >
           上传数据包
         </n-button>
       </div>
@@ -130,7 +139,6 @@ const form = ref({
   happenedAt: Date.now(),
   location: "",
   albumId: null as number | null,
-  albumId: props.initialAlbumId || null, // fix: ensure initial value
 });
 
 // 移除验证规则，改为在提交时手动检查
@@ -326,7 +334,7 @@ onMounted(() => {
 
 .upload-symbol {
   font-size: 40px;
-  color: var(--neon-blue);
+  color: #00f3ff;
   font-weight: bold;
 }
 
@@ -341,7 +349,7 @@ onMounted(() => {
 }
 
 .cancel-btn {
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
 }
 .cancel-btn:hover {
   color: #fff;

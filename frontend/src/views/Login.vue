@@ -1,19 +1,19 @@
 <template>
-  <div class="login-container">
+  <div class="login-container min-h-screen flex items-center justify-center bg-dark-bg relative overflow-hidden">
     <!-- 动态背景 -->
     <div class="cyber-grid"></div>
     <div class="scan-overlay"></div>
 
-    <div class="login-content">
-      <div class="brand-area">
-        <h1 class="brand-title">NEURAL</h1>
-        <p class="brand-subtitle">时空终端 // 需要访问权限</p>
+    <div class="login-content w-full max-w-[460px] z-10 flex flex-col gap-5">
+      <div class="brand-area text-center">
+        <h1 class="brand-title font-orbitron text-6xl text-white text-shadow-glow-blue tracking-[4px] mb-1">NEURAL</h1>
+        <p class="brand-subtitle font-share-tech-mono text-neon-blue tracking-[2px] text-xs opacity-80">时空终端 // 需要访问权限</p>
       </div>
 
-      <n-card class="login-card" :bordered="false" size="huge">
-        <div class="card-header">
-          <div class="status-light" :class="{ active: !loading }"></div>
-          <n-text class="card-title">{{
+      <n-card class="login-card border border-neon-blue/30 shadow-glow-blue" :bordered="false" size="huge">
+        <div class="card-header flex items-center justify-center gap-2.5 mb-7 border-b border-neon-blue/20 pb-4">
+          <div class="status-light w-2 h-2 bg-gray-700 rounded-full" :class="{ active: !loading }"></div>
+          <n-text class="card-title font-share-tech-mono text-xl text-white">{{
             isRegisterMode ? "新用户注册程序" : "身份验证程序"
           }}</n-text>
         </div>
@@ -25,10 +25,10 @@
               placeholder="输入用户名"
               :disabled="loading"
               @keyup.enter="handleSubmit"
-              class="cyber-input"
+              class="cyber-input font-share-tech-mono"
             >
               <template #prefix>
-                <span class="input-icon">></span>
+                <span class="input-icon text-neon-blue">></span>
               </template>
             </n-input>
           </n-form-item>
@@ -36,14 +36,15 @@
           <n-form-item path="password" :show-label="false">
             <n-input
               v-model:value="form.password"
+              show-password-on="click"
               type="password"
               placeholder="输入访问密钥"
               :disabled="loading"
               @keyup.enter="handleSubmit"
-              class="cyber-input"
+              class="cyber-input font-share-tech-mono"
             >
               <template #prefix>
-                <span class="input-icon">#</span>
+                <span class="input-icon text-neon-blue">#</span>
               </template>
             </n-input>
           </n-form-item>
@@ -56,13 +57,13 @@
             size="large"
             :loading="loading"
             @click="handleSubmit"
-            class="cyber-btn"
+            class="cyber-btn font-orbitron tracking-[2px] h-[50px] text-base"
           >
             {{ isRegisterMode ? "启动注册" : "连接核心" }}
           </n-button>
 
-          <div class="toggle-mode">
-            <span @click="toggleMode" class="cyber-link">
+          <div class="toggle-mode text-center mt-4">
+            <span @click="toggleMode" class="cyber-link font-share-tech-mono text-neon-blue/60 cursor-pointer text-sm transition-all duration-300 hover:text-neon-blue hover:text-shadow-glow-blue-sm">
               {{ isRegisterMode ? "[ 切换至登录 ]" : "[ 创建新身份 ]" }}
             </span>
           </div>
@@ -70,7 +71,7 @@
       </n-card>
 
       <div class="footer">
-        <n-text depth="3" class="copyright"
+        <n-text depth="3" class="copyright font-share-tech-mono text-[0.7rem] text-white/30"
           >系统版本 3.0 // 记忆核心在线</n-text
         >
       </div>
@@ -164,27 +165,15 @@ const toggleMode = () => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
-
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #050b14;
-  position: relative;
-  overflow: hidden;
-}
-
 /* 动态网格背景 */
 .cyber-grid {
   position: absolute;
-  width: 200%; height: 200%;
+  width: 200%;
+  height: 200%;
   background-image: 
     linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
-  transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
   animation: grid-scroll 20s linear infinite;
   opacity: 0.2;
 }
@@ -194,99 +183,13 @@ const toggleMode = () => {
   100% { transform: perspective(500px) rotateX(60deg) translateY(50px) translateZ(-200px); }
 }
 
-.login-content {
-  width: 100%;
-  max-width: 460px;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.brand-area { text-align: center; }
-.brand-title {
-  font-family: "Orbitron", sans-serif;
-  font-size: 3.5rem;
-  color: #fff;
-  text-shadow: 0 0 15px #00f3ff;
-  letter-spacing: 4px;
-  margin-bottom: 5px;
-}
-.brand-subtitle {
-  font-family: "Share Tech Mono", monospace;
-  color: #00f3ff;
-  letter-spacing: 2px;
-  font-size: 0.8rem;
-  opacity: 0.8;
-}
-
-.login-card {
-  /* Note: Background handled by global override, but we add specific glowing borders here */
-  border: 1px solid rgba(0, 243, 255, 0.3);
-  box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 30px;
-  border-bottom: 1px solid rgba(0, 243, 255, 0.2);
-  padding-bottom: 15px;
-}
-
-.status-light {
-  width: 8px; height: 8px;
-  background: #333;
-  border-radius: 50%;
-}
 .status-light.active {
   background: #00f3ff;
   box-shadow: 0 0 8px #00f3ff;
   animation: blink 2s infinite;
 }
 
-.card-title {
-  font-family: "Share Tech Mono", monospace;
-  font-size: 1.2rem;
-  color: #fff;
+@keyframes blink { 
+  50% { opacity: 0.5; } 
 }
-
-.cyber-input {
-  font-family: "Share Tech Mono";
-}
-.input-icon { color: #00f3ff; }
-
-.cyber-btn {
-  font-family: "Orbitron", sans-serif;
-  letter-spacing: 2px;
-  height: 50px;
-  font-size: 1rem;
-}
-
-.toggle-mode {
-  text-align: center;
-  margin-top: 15px;
-}
-
-.cyber-link {
-  font-family: "Share Tech Mono";
-  color: rgba(0, 243, 255, 0.6);
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s;
-}
-.cyber-link:hover {
-  color: #00f3ff;
-  text-shadow: 0 0 5px #00f3ff;
-}
-
-.copyright {
-  font-family: "Share Tech Mono";
-  font-size: 0.7rem;
-  color: rgba(255,255,255,0.3);
-}
-
-@keyframes blink { 50% { opacity: 0.5; } }
 </style>

@@ -1,13 +1,13 @@
 <template>
-  <div class="album-list-container">
-    <div class="section-header">
-      <n-text class="section-title">归档模块 // 相册集</n-text>
-      <n-button
-        type="primary"
-        dashed
-        @click="showCreateModal = true"
-        class="cyber-btn-dashed"
+  <div class="album-list-container py-5">
+    <div
+      class="section-header flex justify-between items-center mb-6 px-2 border-b border-neon-blue/20 pb-2.5"
+    >
+      <n-text
+        class="section-title font-share-tech-mono text-2xl text-neon-blue text-shadow-glow-blue-sm"
+        >归档模块 // 相册集</n-text
       >
+      <n-button type="primary" dashed @click="showCreateModal = true">
         <template #icon>
           <n-icon><add-outline /></n-icon>
         </template>
@@ -15,25 +15,26 @@
       </n-button>
     </div>
 
-    <div v-if="errorMessage" class="error-state">
+    <div v-if="errorMessage">
       <n-empty description="数据损坏">
         <template #extra>
-          <div class="error-actions">
+          <div>
             <n-text type="error">{{ errorMessage }}</n-text>
-            <n-button size="small" @click="loadAlbums" class="cyber-btn-small"
-              >重试连接</n-button
-            >
+            <n-button size="small" @click="loadAlbums">重试连接</n-button>
           </div>
         </template>
       </n-empty>
     </div>
 
     <n-spin :show="loading" v-else>
-      <div v-if="albums.length > 0" class="albums-grid">
+      <div
+        v-if="albums.length > 0"
+        class="albums-grid grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-6"
+      >
         <div
           v-for="album in albums"
           :key="album.id"
-          class="cyber-card"
+          class="cyber-card relative bg-dark-bg/60 border border-neon-blue/30 cursor-pointer overflow-hidden transition-all duration-300 hover:border-neon-blue hover:shadow-glow-blue-sm hover:-translate-y-1"
           @click="handleView(album)"
         >
           <!-- 角落装饰 -->
@@ -42,49 +43,64 @@
           <div class="corner-deco bl"></div>
           <div class="corner-deco br"></div>
 
-          <div class="card-cover">
+          <div
+            class="card-cover w-full h-[180px] relative bg-black overflow-hidden"
+          >
             <n-image
               v-if="album.coverUrl"
               :src="resolveUploadUrl(album.coverUrl)"
               object-fit="cover"
               preview-disabled
-              class="cover-image"
+              class="cover-image w-full h-full opacity-80 grayscale-[40%] transition-all duration-500"
             />
             <div v-else class="cover-placeholder">
-              <n-icon size="48" :depth="3" class="placeholder-icon">
+              <n-icon size="48" :depth="3" class="text-gray-700">
                 <images-outline />
               </n-icon>
             </div>
 
             <!-- 扫描覆盖层 -->
             <div class="scan-overlay"></div>
-            <div class="hover-actions">
-              <n-button class="enter-btn cyber-btn-glitch">访问数据</n-button>
+            <div
+              class="hover-actions absolute top-0 left-0 right-0 bottom-0 bg-black/60 flex items-center justify-center opacity-0 transition-opacity duration-300"
+            >
+              <n-button class="font-share-tech-mono tracking-[2px]"
+                >访问数据</n-button
+              >
             </div>
           </div>
 
-          <div class="card-info">
-            <div class="info-header">
-              <n-text class="album-name">{{ album.name }}</n-text>
-              <n-text class="id-tag"
+          <div class="card-info p-3 border-b border-neon-blue/10">
+            <div class="info-header flex justify-between items-center mb-1">
+              <n-text
+                class="album-name text-white font-rajdhani font-bold text-lg uppercase"
+                >{{ album.name }}</n-text
+              >
+              <n-text
+                class="id-tag text-[10px] text-neon-purple font-share-tech-mono"
                 >编号:{{ album.id.toString().padStart(4, "0") }}</n-text
               >
             </div>
-            <n-text class="date"
+            <n-text class="date text-[10px] text-white/50"
               >创建于: {{ formatDate(album.createdAt) }}</n-text
             >
           </div>
 
-          <div class="card-footer">
-            <n-text class="description" v-if="album.description">
+          <div
+            class="card-footer p-2.5 px-3 flex justify-between items-center min-h-[40px]"
+          >
+            <n-text
+              class="description text-xs text-neon-blue/70 whitespace-nowrap overflow-hidden text-ellipsis max-w-[70%]"
+              v-if="album.description"
+            >
               {{ album.description }}
             </n-text>
-            <div class="action-buttons">
+            <div class="action-buttons flex gap-1">
               <n-button
                 size="tiny"
                 text
                 @click.stop="handleEdit(album)"
-                class="action-icon"
+                class="action-icon text-white/50 hover:text-neon-blue"
               >
                 <template #icon><create-outline /></template>
               </n-button>
@@ -93,7 +109,7 @@
                 text
                 type="error"
                 @click.stop="handleDelete(album)"
-                class="action-icon delete"
+                class="action-icon delete hover:text-neon-red"
               >
                 <template #icon><trash-outline /></template>
               </n-button>
@@ -101,14 +117,10 @@
           </div>
         </div>
       </div>
-      <div v-else class="empty-state">
+      <div v-else>
         <n-empty description="未发现归档" size="large">
           <template #extra>
-            <n-button
-              type="primary"
-              @click="showCreateModal = true"
-              class="cyber-btn"
-            >
+            <n-button type="primary" @click="showCreateModal = true">
               初始化首个归档
             </n-button>
           </template>
@@ -124,15 +136,10 @@
       size="huge"
       :title="editingAlbum ? '修改归档配置' : '新建归档协议'"
       :bordered="false"
-      class="cyber-modal"
     >
       <n-form ref="formRef" :model="form" :rules="rules">
         <n-form-item path="name" label="归档名称">
-          <n-input
-            v-model:value="form.name"
-            placeholder="输入名称..."
-            class="cyber-input"
-          />
+          <n-input v-model:value="form.name" placeholder="输入名称..." />
         </n-form-item>
         <n-form-item path="description" label="元数据描述">
           <n-input
@@ -140,27 +147,39 @@
             type="textarea"
             placeholder="输入元数据..."
             :rows="3"
-            class="cyber-input"
           />
         </n-form-item>
         <n-form-item path="coverUrl" label="封面图像">
-          <div class="cover-upload-container">
+          <div class="w-full">
             <n-upload
               action="#"
               :custom-request="handleUpload"
               :show-file-list="false"
               accept="image/*"
             >
-              <div v-if="form.coverUrl" class="cover-preview">
-                <img :src="resolveUploadUrl(form.coverUrl)" alt="cover" />
-                <div class="cover-mask">
+              <div
+                v-if="form.coverUrl"
+                class="relative w-full h-[200px] border border-neon-blue overflow-hidden"
+              >
+                <img
+                  :src="resolveUploadUrl(form.coverUrl)"
+                  alt="cover"
+                  class="w-full h-full object-cover"
+                />
+                <div
+                  class="absolute top-0 left-0 w-full h-full bg-black/70 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 text-neon-blue font-share-tech-mono hover:opacity-100"
+                >
                   <n-icon size="24" color="#00f3ff"><camera-outline /></n-icon>
                   <span>更新图像</span>
                 </div>
               </div>
               <n-upload-dragger v-else class="cover-dragger">
                 <div class="dragger-content">
-                  <n-icon size="32" :depth="3" class="upload-icon">
+                  <n-icon
+                    size="32"
+                    :depth="3"
+                    class="upload-icon text-neon-blue"
+                  >
                     <add-outline />
                   </n-icon>
                 </div>
@@ -171,7 +190,7 @@
       </n-form>
 
       <template #footer>
-        <div class="modal-actions">
+        <div class="flex justify-end gap-3">
           <n-button ghost @click="handleCancel" class="cancel-btn"
             >终止</n-button
           >
@@ -357,54 +376,22 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.album-list-container {
-  padding: 20px 0;
+/* 保留动画和特殊效果 */
+.cyber-card:hover .cover-image {
+  filter: grayscale(0%);
+  opacity: 1;
+  transform: scale(1.05);
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  padding: 0 8px;
-  border-bottom: 1px solid rgba(0, 243, 255, 0.2);
-  padding-bottom: 10px;
-}
-
-.section-title {
-  font-family: "Share Tech Mono", monospace;
-  font-size: 24px;
-  color: var(--neon-blue);
-  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
-}
-
-.albums-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 24px;
-}
-
-/* Cyber Card Styles */
-.cyber-card {
-  position: relative;
-  background: rgba(5, 11, 20, 0.6);
-  border: 1px solid rgba(0, 243, 255, 0.3);
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.cyber-card:hover {
-  border-color: var(--neon-blue);
-  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-  transform: translateY(-5px);
+.cyber-card:hover .hover-actions {
+  opacity: 1;
 }
 
 .corner-deco {
   position: absolute;
   width: 8px;
   height: 8px;
-  border: 2px solid var(--neon-blue);
+  border: 2px solid #00f3ff;
   transition: all 0.3s;
   opacity: 0.5;
   z-index: 2;
@@ -439,27 +426,6 @@ onMounted(() => {
   border-top: 0;
 }
 
-.card-cover {
-  width: 100%;
-  height: 180px;
-  position: relative;
-  background: #000;
-  overflow: hidden;
-}
-
-.cover-image {
-  width: 100%;
-  height: 100%;
-  opacity: 0.8;
-  filter: grayscale(40%);
-  transition: all 0.5s;
-}
-.cyber-card:hover .cover-image {
-  filter: grayscale(0%);
-  opacity: 1;
-  transform: scale(1.05);
-}
-
 .scan-overlay {
   position: absolute;
   top: 0;
@@ -475,144 +441,5 @@ onMounted(() => {
   pointer-events: none;
 }
 
-.hover-actions {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.cyber-card:hover .hover-actions {
-  opacity: 1;
-}
-
-.cyber-btn-glitch {
-  background: transparent;
-  border: 1px solid var(--neon-blue);
-  color: var(--neon-blue);
-  font-family: "Share Tech Mono";
-  letter-spacing: 2px;
-}
-.cyber-btn-glitch:hover {
-  background: var(--neon-blue);
-  color: #000;
-  box-shadow: 0 0 10px var(--neon-blue);
-}
-
-.card-info {
-  padding: 12px;
-  border-bottom: 1px solid rgba(0, 243, 255, 0.1);
-}
-
-.info-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.album-name {
-  color: #fff;
-  font-family: "Rajdhani";
-  font-weight: bold;
-  font-size: 18px;
-  text-transform: uppercase;
-}
-
-.id-tag {
-  font-size: 10px;
-  color: var(--neon-purple);
-  font-family: "Share Tech Mono";
-}
-
-.date {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.card-footer {
-  padding: 10px 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 40px;
-}
-
-.description {
-  font-size: 12px;
-  color: rgba(0, 243, 255, 0.7);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 70%;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 5px;
-}
-
-.action-icon {
-  color: rgba(255, 255, 255, 0.5);
-}
-.action-icon:hover {
-  color: var(--neon-blue);
-}
-.action-icon.delete:hover {
-  color: var(--neon-red);
-}
-
-/* Modal Styles */
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-.cover-upload-container {
-  width: 100%;
-}
-.cover-preview {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  border: 1px solid var(--neon-blue);
-  overflow: hidden;
-}
-.cover-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.cover-mask {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s;
-  color: var(--neon-blue);
-  font-family: "Share Tech Mono";
-}
-.cover-preview:hover .cover-mask {
-  opacity: 1;
-}
-
-.placeholder-icon {
-  color: #333;
-}
-.upload-icon {
-  color: var(--neon-blue);
-}
+/* Tailwind 样式已应用，保留必要的过渡效果 */
 </style>

@@ -1,6 +1,6 @@
 <template>
-  <div class="memory-helix-container">
-    <div class="helix-viewport">
+  <div class="memory-helix-container w-full h-full relative flex flex-col overflow-hidden perspective-[800px] font-share-tech-mono">
+    <div class="helix-viewport flex-1 relative flex justify-center items-center preserve-3d">
       <div
         class="helix-structure"
         :style="{ transform: `rotateY(${rotation}deg)` }"
@@ -155,33 +155,12 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.memory-helix-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  perspective: 800px;
-  font-family: "Share Tech Mono", monospace;
-}
-
-.helix-viewport {
-  flex: 1;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* 稍微俯视一点 */
-  transform-style: preserve-3d;
-}
-
+/* 3D 螺旋结构 - 保留所有动画效果 */
 .helix-structure {
   position: relative;
   width: 0;
   height: 0;
   transform-style: preserve-3d;
-  /* 这里不需要 transition，因为是用 requestAnimationFrame 驱动的 */
 }
 
 .central-axis {

@@ -83,11 +83,11 @@ export interface PageResponse<T> {
   totalPages: number
   size: number
   number: number
+  last: boolean
 }
 
 export interface MusicRequest {
-  title: string
-  artist: string
+  title?: string
   url: string
   coverUrl?: string
 }
@@ -95,7 +95,6 @@ export interface MusicRequest {
 export interface MusicResponse {
   id: number
   title: string
-  artist: string
   url: string
   coverUrl?: string
   createdAt: string

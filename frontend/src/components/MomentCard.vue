@@ -145,7 +145,7 @@ const handleDelete = async () => {
 }
 
 .moment-card:hover {
-  border-color: var(--neon-blue);
+  border-color: #00f3ff;
   box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
   transform: translateY(-2px);
 }
@@ -154,7 +154,7 @@ const handleDelete = async () => {
   content: '';
   position: absolute;
   top: 0; left: 0; width: 4px; height: 100%;
-  background: var(--neon-blue);
+  background: #00f3ff;
   opacity: 0.5;
 }
 
@@ -176,7 +176,7 @@ const handleDelete = async () => {
 .date {
   font-family: "Share Tech Mono";
   font-size: 0.9rem;
-  color: var(--neon-blue);
+  color: #00f3ff;
   letter-spacing: 1px;
 }
 
@@ -194,17 +194,17 @@ const handleDelete = async () => {
 
 .album-tag.clickable {
   cursor: pointer;
-  color: var(--neon-purple);
+  color: #bc13fe;
 }
 .album-tag.clickable:hover {
   text-decoration: underline;
-  text-shadow: 0 0 5px var(--neon-purple);
+  text-shadow: 0 0 5px #bc13fe;
 }
 
 .delete-btn {
   color: rgba(255,255,255,0.3);
 }
-.delete-btn:hover { color: var(--neon-red); text-shadow: 0 0 5px var(--neon-red); }
+.delete-btn:hover { color: #ff0055; text-shadow: 0 0 5px #ff0055; }
 
 .card-content {
   margin-bottom: 16px;

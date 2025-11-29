@@ -1,10 +1,15 @@
 <template>
-  <div class="album-detail-container">
+  <div
+    class="album-detail-container min-h-screen bg-dark-bg relative overflow-hidden"
+  >
     <div class="cyber-grid-bg"></div>
     <n-layout class="layout-bg">
-      <n-layout-header class="cyber-header" bordered>
-        <div class="header-content">
-          <div class="left-actions">
+      <n-layout-header
+        class="h-16 px-6 flex items-center backdrop-blur-md bg-black/40 border-b border-neon-blue/20"
+        bordered
+      >
+        <div class="header-content w-full flex justify-between items-center">
+          <div class="left-actions flex items-center gap-4">
             <n-button
               circle
               quaternary
@@ -15,13 +20,16 @@
                 <n-icon><arrow-back-outline /></n-icon>
               </template>
             </n-button>
-            <div class="page-title-wrapper">
-              <n-text class="page-title">档案详情 // 访问模式</n-text>
+            <div class="page-title-wrapper relative">
+              <n-text
+                class="page-title font-share-tech-mono text-lg text-neon-blue tracking-wider"
+                >档案详情 // 访问模式</n-text
+              >
               <div class="scan-line"></div>
             </div>
           </div>
           <div class="header-actions">
-            <n-button type="primary" class="cyber-btn" @click="handleCreate">
+            <n-button type="primary" @click="handleCreate">
               <template #icon>
                 <n-icon><add-outline /></n-icon>
               </template>
@@ -31,36 +39,53 @@
         </div>
       </n-layout-header>
 
-      <n-layout-content class="content" :native-scrollbar="false">
-        <div class="main-wrapper">
+      <n-layout-content class="content p-6" :native-scrollbar="false">
+        <div class="main-wrapper max-w-6xl mx-auto">
           <!-- Album Info Card -->
-          <div class="album-info cyber-panel" v-if="album">
+          <div
+            class="album-info relative bg-gradient-to-br from-dark-bg/80 to-[rgba(10,21,37,0.8)] border border-neon-blue/30 rounded-lg p-6 mb-6 backdrop-blur-sm flex gap-6 transition-all duration-300 hover:border-neon-blue hover:shadow-glow-blue-sm"
+            v-if="album"
+          >
             <div class="corner-deco tl"></div>
             <div class="corner-deco tr"></div>
             <div class="corner-deco bl"></div>
             <div class="corner-deco br"></div>
 
-            <div class="album-cover-wrapper">
+            <div
+              class="album-cover-wrapper w-48 h-48 flex-shrink-0 relative overflow-hidden rounded border border-neon-blue/40 bg-black"
+            >
               <n-image
                 v-if="album.coverUrl"
                 :src="resolveUploadUrl(album.coverUrl)"
                 object-fit="cover"
-                class="album-cover"
+                class="album-cover w-full h-full"
               />
-              <div v-else class="album-cover-placeholder">
+              <div
+                v-else
+                class="album-cover-placeholder w-full h-full flex items-center justify-center"
+              >
                 <n-icon size="48" color="#333"><images-outline /></n-icon>
               </div>
               <div class="scan-overlay"></div>
             </div>
-            <div class="album-meta">
-              <h1 class="album-name glitch-text" :data-text="album.name">
+            <div class="album-meta flex-1 flex flex-col justify-center">
+              <h1
+                class="album-name glitch-text font-rajdhani text-4xl font-bold text-white mb-2 uppercase tracking-wide"
+                :data-text="album.name"
+              >
                 {{ album.name }}
               </h1>
-              <p class="album-desc">
+              <p
+                class="album-desc text-white/70 text-sm mb-4 font-share-tech-mono"
+              >
                 {{ album.description || "元数据缺失..." }}
               </p>
               <div class="album-stats">
-                <n-tag size="small" class="cyber-tag" :bordered="false">
+                <n-tag
+                  size="small"
+                  class="bg-neon-blue/10 text-neon-blue border border-neon-blue/30"
+                  :bordered="false"
+                >
                   建立日期: {{ formatDateShort(album.createdAt) }}
                 </n-tag>
               </div>
@@ -74,7 +99,7 @@
             class="custom-tabs cyber-tabs"
           >
             <n-tab-pane name="timeline" tab="时间轴回溯">
-              <div class="timeline-container">
+              <div class="timeline-container py-5 max-w-[800px] mx-auto">
                 <n-spin :show="loading">
                   <n-timeline v-if="moments.length > 0" size="large">
                     <n-timeline-item
@@ -92,23 +117,23 @@
                       />
                     </n-timeline-item>
                   </n-timeline>
-                  <div v-else class="empty-state">
+                  <div
+                    v-else
+                    class="text-center py-10 flex flex-col items-center gap-4"
+                  >
                     <n-empty description="尚未探测到记忆信号" />
-                    <n-button
-                      class="create-btn cyber-btn"
-                      type="primary"
-                      @click="handleCreate"
+                    <n-button type="primary" @click="handleCreate"
                       >启动数据录入</n-button
                     >
                   </div>
                 </n-spin>
 
-                <div v-if="hasMore" class="load-more">
+                <div v-if="hasMore" class="load-more text-center mt-12 pb-8">
                   <n-button
                     text
                     @click="loadMore"
                     :loading="loading"
-                    class="cyber-link-btn"
+                    class="text-neon-blue font-share-tech-mono hover:text-shadow-glow-blue-sm"
                   >
                     <template #icon>
                       <n-icon><reload-outline /></n-icon>
@@ -120,21 +145,24 @@
             </n-tab-pane>
 
             <n-tab-pane name="photowall" tab="视觉矩阵">
-              <div class="photowall-container">
+              <div class="photowall-container py-5">
                 <n-spin :show="loading">
-                  <div v-if="allPhotos.length > 0" class="masonry-grid">
+                  <div
+                    v-if="allPhotos.length > 0"
+                    class="masonry-grid grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4"
+                  >
                     <n-image-group>
                       <div
                         v-for="photo in allPhotos"
                         :key="photo.id"
-                        class="masonry-item cyber-frame"
+                        class="masonry-item cyber-frame border border-neon-blue/20 bg-black/30 relative overflow-hidden transition-all duration-300"
                       >
-                        <div class="image-wrapper">
+                        <div class="image-wrapper relative">
                           <n-image
                             :src="resolveUploadUrl(photo.filePath)"
                             object-fit="cover"
                             preview-disabled
-                            class="photo-image"
+                            class="photo-image w-full block contrast-110 saturate-90"
                             lazy
                           />
                           <div class="image-overlay"></div>
@@ -146,12 +174,15 @@
                   <n-empty v-else description="无视觉数据" />
                 </n-spin>
 
-                <div v-if="hasMore && allPhotos.length > 0" class="load-more">
+                <div
+                  v-if="hasMore && allPhotos.length > 0"
+                  class="load-more text-center mt-12 pb-8"
+                >
                   <n-button
                     text
                     @click="loadMore"
                     :loading="loading"
-                    class="cyber-link-btn"
+                    class="text-neon-blue font-share-tech-mono hover:text-shadow-glow-blue-sm"
                   >
                     <template #icon>
                       <n-icon><reload-outline /></n-icon>
@@ -317,16 +348,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap");
-
-.album-detail-container {
-  min-height: 100vh;
-  background-color: var(--dark-bg);
-  position: relative;
-  color: #fff;
-  font-family: "Rajdhani", sans-serif;
-}
-
+/* 网格背景 */
 .cyber-grid-bg {
   position: fixed;
   top: 0;
@@ -349,53 +371,12 @@ onMounted(() => {
   z-index: 1;
 }
 
-.cyber-header {
-  height: 64px;
-  background: rgba(5, 11, 20, 0.8) !important;
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 243, 255, 0.2);
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-.header-content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.left-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
 .cyber-back-btn {
-  color: var(--neon-blue);
+  color: #00f3ff;
 }
 .cyber-back-btn:hover {
   color: #fff;
   background: rgba(0, 243, 255, 0.2);
-}
-
-.page-title-wrapper {
-  position: relative;
-}
-
-.page-title {
-  font-family: "Share Tech Mono", monospace;
-  font-size: 18px;
-  color: var(--neon-blue);
-  letter-spacing: 1px;
-  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
 }
 
 .scan-line {
@@ -404,7 +385,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--neon-blue);
+  background: #00f3ff;
   animation: scan-width 2s infinite alternate;
 }
 
@@ -419,32 +400,11 @@ onMounted(() => {
   }
 }
 
-.content {
-  background-color: transparent;
-}
-
-.main-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px 24px;
-}
-
-.cyber-panel {
-  background: rgba(5, 11, 20, 0.6);
-  border: 1px solid rgba(0, 243, 255, 0.3);
-  position: relative;
-  padding: 24px;
-  display: flex;
-  gap: 24px;
-  margin-bottom: 40px;
-  backdrop-filter: blur(5px);
-}
-
 .corner-deco {
   position: absolute;
   width: 10px;
   height: 10px;
-  border: 2px solid var(--neon-blue);
+  border: 2px solid #00f3ff;
 }
 .tl {
   top: -1px;
@@ -471,32 +431,6 @@ onMounted(() => {
   border-top: 0;
 }
 
-.album-cover-wrapper {
-  width: 140px;
-  height: 140px;
-  flex-shrink: 0;
-  border: 1px solid var(--neon-blue);
-  position: relative;
-  overflow: hidden;
-  background: #000;
-}
-
-.album-cover {
-  width: 100%;
-  height: 100%;
-  opacity: 0.8;
-  filter: grayscale(50%);
-}
-
-.album-cover-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #111;
-}
-
 .scan-overlay {
   position: absolute;
   top: 0;
@@ -512,197 +446,19 @@ onMounted(() => {
   pointer-events: none;
 }
 
-.album-meta {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.album-name {
-  font-family: "Rajdhani", sans-serif;
-  font-size: 32px;
-  font-weight: 700;
-  color: #fff;
-  margin: 0 0 8px 0;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-.album-desc {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
-  margin: 0 0 16px 0;
-  font-family: "Share Tech Mono";
-}
-
-.cyber-tag {
-  background: rgba(0, 243, 255, 0.1);
-  color: var(--neon-blue);
-  border: 1px solid rgba(0, 243, 255, 0.3);
-}
-
-/* Tabs Customization */
-:deep(.n-tabs .n-tabs-nav) {
-  background: transparent;
-}
-:deep(.n-tabs .n-tabs-tab) {
-  color: rgba(255, 255, 255, 0.5);
-  font-family: "Share Tech Mono";
-  transition: all 0.3s;
-}
-:deep(.n-tabs .n-tabs-tab:hover) {
-  color: var(--neon-blue);
-}
-:deep(.n-tabs .n-tabs-tab--active) {
-  color: var(--neon-blue) !important;
-  text-shadow: 0 0 5px var(--neon-blue);
-}
-:deep(.n-tabs .n-tabs-bar) {
-  background-color: var(--neon-blue);
-  box-shadow: 0 0 8px var(--neon-blue);
-}
-/* Tabs Background Fix */
-:deep(.n-tabs-pane-wrapper) {
-  background: transparent !important;
-}
-:deep(.n-tab-pane) {
-  background-color: rgba(5, 11, 20, 0.4) !important;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(0, 243, 255, 0.1);
-  border-top: none;
-  padding: 20px;
-  color: #fff;
-}
-
-/* Segmented Tabs Override */
-:deep(.n-tabs .n-tabs-rail) {
-  background-color: rgba(5, 11, 20, 0.8) !important;
-  border: 1px solid rgba(0, 243, 255, 0.2);
-  padding: 4px;
-  border-radius: 4px;
-}
-
-/* Target the sliding capsule (background of active tab) */
-:deep(.n-tabs .n-tabs-rail .n-tabs-capsule) {
-  background-color: rgba(0, 243, 255, 0.15) !important;
-  border: 1px solid var(--neon-blue) !important;
-  box-shadow: 0 0 10px rgba(0, 243, 255, 0.3) !important;
-  border-radius: 4px;
-}
-
-/* Target the active tab text */
-:deep(.n-tabs .n-tabs-tab.n-tabs-tab--active) {
-  color: var(--neon-blue) !important;
-  text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
-  font-weight: bold;
-  z-index: 1; /* Ensure text is above capsule */
-}
-
-/* Target inactive tabs */
-:deep(.n-tabs .n-tabs-tab) {
-  background-color: transparent !important;
-  color: rgba(255, 255, 255, 0.6) !important;
-  transition: all 0.3s;
-}
-
-:deep(.n-tabs .n-tabs-tab:hover) {
-  color: var(--neon-blue) !important;
-}
-
-/* Timeline Customization */
-:deep(.n-timeline .n-timeline-item-timeline__line) {
-  background-color: rgba(0, 243, 255, 0.2) !important;
-}
-
-:deep(.n-timeline .n-timeline-item-content__title) {
-  color: var(--neon-blue) !important;
-  font-family: "Share Tech Mono";
-  margin-bottom: 6px !important;
-}
-
-:deep(.n-timeline .n-timeline-item-content__time) {
-  color: rgba(255, 255, 255, 0.5) !important;
-  font-family: "Share Tech Mono";
-  font-size: 12px;
-}
-
-:deep(.n-timeline .n-timeline-item-content__content) {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* Empty State Customization */
-:deep(.n-empty__description) {
-  color: rgba(255, 255, 255, 0.5) !important;
-  font-family: "Share Tech Mono";
-}
-:deep(.n-empty__icon) {
-  color: rgba(0, 243, 255, 0.3) !important;
-  transition: all 0.3s;
-}
-:deep(.n-empty:hover .n-empty__icon) {
-  color: var(--neon-blue) !important;
-  filter: drop-shadow(0 0 8px var(--neon-blue));
-}
-
-.timeline-container {
-  padding: 20px 0;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
 .timeline-dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: var(--dark-bg);
-  border: 2px solid var(--neon-blue);
-  box-shadow: 0 0 5px var(--neon-blue);
+  background-color: #050b14;
+  border: 2px solid #00f3ff;
+  box-shadow: 0 0 5px #00f3ff;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 40px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.cyber-link-btn {
-  color: var(--neon-blue);
-  font-family: "Share Tech Mono";
-}
-.cyber-link-btn:hover {
-  text-shadow: 0 0 5px var(--neon-blue);
-}
-
-/* Photowall */
-.photowall-container {
-  padding: 20px 0;
-}
-
-.masonry-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.cyber-frame {
-  border: 1px solid rgba(0, 243, 255, 0.2);
-  background: rgba(0, 0, 0, 0.3);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s;
-}
 .cyber-frame:hover {
-  border-color: var(--neon-blue);
+  border-color: #00f3ff;
   box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
   transform: translateY(-5px);
-}
-
-.image-wrapper {
-  position: relative;
 }
 
 .image-overlay {
@@ -746,17 +502,5 @@ onMounted(() => {
     left: 100%;
     opacity: 0;
   }
-}
-
-.photo-image {
-  width: 100%;
-  display: block;
-  filter: contrast(1.1) saturate(0.9);
-}
-
-.load-more {
-  text-align: center;
-  margin-top: 48px;
-  padding-bottom: 32px;
 }
 </style>

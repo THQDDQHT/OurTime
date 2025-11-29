@@ -1,5 +1,7 @@
 <template>
-  <div class="tech-reactor-player">
+  <div
+    class="tech-reactor-player relative w-full h-full flex flex-col items-center justify-center font-share-tech-mono perspective-[1000px]"
+  >
     <!-- 反应堆主体 -->
     <div class="reactor-assembly">
       <!-- 能量光环 (进度条) -->
@@ -107,9 +109,6 @@
               <div class="song-list-item" @click="playSong(song)">
                 <div class="song-list-info">
                   <n-text strong>{{ song.title }}</n-text>
-                  <n-text depth="3" style="font-size: 12px">{{
-                    song.artist
-                  }}</n-text>
                 </div>
                 <div class="song-list-action">
                   <div
@@ -144,7 +143,7 @@
                 :show-file-list="false"
                 accept=".mp3,.wav,.m4a,.flac"
               >
-                <n-button v-if="!form.url" ghost type="primary" color="#00f3ff"
+                <n-button v-if="!form.url" block class="text-neon-blue"
                   >选择文件</n-button
                 >
                 <n-text v-else type="success"
@@ -159,10 +158,13 @@
                 :show-file-list="false"
                 accept="image/*"
               >
-                <div class="upload-cover-preview" v-if="form.coverUrl">
+                <div
+                  class="upload-cover-preview text-neon-blue"
+                  v-if="form.coverUrl"
+                >
                   <img :src="resolveUploadUrl(form.coverUrl)" />
                 </div>
-                <n-button v-else ghost type="primary" color="#00f3ff"
+                <n-button v-else class="text-neon-blue" block
                   >上传图像</n-button
                 >
               </n-upload>
@@ -363,18 +365,7 @@ watch(
 </script>
 
 <style scoped>
-.tech-reactor-player {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-family: "Share Tech Mono", monospace;
-  perspective: 1000px;
-}
-
+/* 反应堆核心组件 - 保留所有 3D 效果和动画 */
 .reactor-assembly {
   position: relative;
   width: 220px;

@@ -22,42 +22,19 @@ import {
   NMessageProvider,
   NNotificationProvider,
   NDialogProvider,
-  lightTheme,
   zhCN,
   dateZhCN,
-  type GlobalThemeOverrides,
 } from "naive-ui";
 // import MusicPlayer from "@/components/MusicPlayer.vue";
 import { useAuthStore } from "@/stores/auth";
 import { computed } from "vue";
+import { useNaiveTheme } from "@/theme";
 
 const authStore = useAuthStore();
-const showPlayer = computed(() => !!authStore.token); // Only show player when logged in
+const showPlayer = computed(() => !!authStore.token);
 
-const theme = lightTheme;
-
-const themeOverrides: GlobalThemeOverrides = {
-  common: {
-    primaryColor: "#8c7b75",
-    primaryColorHover: "#a39088",
-    primaryColorPressed: "#756660",
-    bodyColor: "#fdfcf8",
-    cardColor: "#ffffff",
-    textColorBase: "#2c3e50",
-    fontFamily: '"Noto Serif SC", "Songti SC", "SimSun", serif', // Use serif for a more literary feel
-  },
-  Card: {
-    borderRadius: "8px",
-    borderColor: "#eaddcf",
-  },
-  Button: {
-    borderRadiusMedium: "4px",
-    fontWeight: "500",
-  },
-  Typography: {
-    headerFontWeight: "700",
-  },
-};
+// 获取赛博朋克主题配置
+const { theme, themeOverrides } = useNaiveTheme();
 </script>
 
 <style scoped></style>

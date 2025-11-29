@@ -1,5 +1,7 @@
 <template>
-  <div class="desktop-container">
+  <div
+    class="desktop-container w-screen h-screen bg-dark-bg overflow-hidden relative font-rajdhani text-neon-blue flex flex-col"
+  >
     <!-- 背景层：Deep Space Grid -->
     <div class="perspective-grid"></div>
     <div class="stars"></div>
@@ -7,26 +9,42 @@
     <div class="vignette"></div>
 
     <!-- 顶部状态栏 -->
-    <div class="status-bar">
-      <div class="logout-trigger" @click="handleLogout">
+    <div
+      class="status-bar h-10 w-full bg-black/80 border-b border-neon-blue/30 flex items-center justify-end px-5 gap-5 z-[100] font-share-tech-mono text-xs"
+    >
+      <div
+        class="logout-trigger flex items-center gap-2 cursor-pointer text-neon-red border border-neon-red/30 px-2 py-0.5 rounded transition-all duration-300 hover:bg-neon-red/10 hover:shadow-glow-red"
+        @click="handleLogout"
+      >
         <div class="icon-power"></div>
         <span>断开连接</span>
       </div>
     </div>
 
     <!-- 主控制台布局 (Grid Layout) -->
-    <div class="main-console">
+    <div
+      class="main-console flex-1 grid grid-cols-[300px_1fr_300px] gap-5 p-10 perspective-[1000px] z-10"
+    >
       <!-- 左翼：数据档案 (Left Wing) -->
-      <div class="console-column left-wing">
-        <div class="panel-header">
-          <span class="panel-title">ARCHIVE_DATA // 记忆库</span>
+      <div class="console-column left-wing relative flex flex-col">
+        <div
+          class="panel-header flex justify-between items-center mb-2.5 border-b-2 border-neon-blue/30 pb-1"
+        >
+          <span
+            class="panel-title font-share-tech-mono text-sm text-neon-blue/70"
+            >ARCHIVE_DATA // 记忆库</span
+          >
           <div class="panel-deco"></div>
         </div>
-        <div class="panel-content album-list-wrapper">
+        <div
+          class="panel-content flex-1 bg-panel-bg border border-neon-blue/20 backdrop-blur-[5px] relative transition-all duration-300 flex flex-col justify-between p-5 cursor-pointer hover:border-neon-blue hover:shadow-glow-blue-sm"
+        >
           <DesktopMemoryHelix @open-archive="showAlbumModal = true" />
-          <div class="archive-action">
+          <div
+            class="archive-action mt-auto w-full pt-4 border-t border-neon-blue/10"
+          >
             <n-button
-              class="cyber-archive-btn"
+              class="font-share-tech-mono font-bold tracking-wide transition-all duration-300"
               ghost
               block
               @click.stop="showAlbumModal = true"
@@ -34,14 +52,17 @@
               <template #icon>
                 <n-icon><AlbumsOutline /></n-icon>
               </template>
-             打开档案库
+              打开档案库
             </n-button>
           </div>
         </div>
       </div>
 
       <!-- 中央核心：时空罗盘 (Center Core) -->
-      <div class="console-column center-core" @click="router.push('/timeline')">
+      <div
+        class="console-column center-core relative flex flex-col items-center justify-center cursor-pointer"
+        @click="router.push('/timeline')"
+      >
         <div class="core-ring-outer"></div>
         <div class="core-ring-inner"></div>
 
@@ -52,39 +73,69 @@
             :style="{ transform: `rotate(${secondsDeg}deg)` }"
           ></div>
 
-          <div class="time-display">
-            <div class="time-label">CURRENT_CYCLE</div>
-            <div class="time-value">{{ timeString }}</div>
-            <div class="date-value">{{ dateString }}</div>
+          <div class="time-display text-center z-10">
+            <div class="time-label text-xs text-white/50 tracking-[2px]">
+              CURRENT_CYCLE
+            </div>
+            <div
+              class="time-value text-[64px] font-bold text-white text-shadow-glow-white leading-none tabular-nums"
+            >
+              {{ timeString }}
+            </div>
+            <div class="date-value text-lg text-neon-blue">
+              {{ dateString }}
+            </div>
           </div>
         </div>
 
-        <div class="core-status">
-          <span class="status-text">TEMPORAL FLUX: STABLE</span>
+        <div
+          class="core-status mt-10 py-1 px-4 bg-neon-blue/10 border border-neon-blue rounded-[20px]"
+        >
+          <span class="status-text font-share-tech-mono text-xs tracking-[2px]"
+            >TEMPORAL FLUX: STABLE</span
+          >
         </div>
       </div>
 
       <!-- 右翼：声波反应堆 (Right Wing) -->
-      <div class="console-column right-wing">
-        <div class="panel-header">
-          <span class="panel-title">SONIC_REACTOR // 播放器</span>
+      <div class="console-column right-wing relative flex flex-col">
+        <div
+          class="panel-header flex justify-between items-center mb-2.5 border-b-2 border-neon-blue/30 pb-1"
+        >
+          <span
+            class="panel-title font-share-tech-mono text-sm text-neon-blue/70"
+            >SONIC_REACTOR // 播放器</span
+          >
           <div class="panel-deco"></div>
         </div>
-        <div class="panel-content player-wrapper">
+        <div
+          class="panel-content flex-1 bg-panel-bg border border-neon-blue/20 backdrop-blur-[5px] relative transition-all duration-300 p-2.5 overflow-hidden hover:border-neon-blue hover:shadow-glow-blue-sm"
+        >
           <DesktopTechPlayer />
         </div>
       </div>
     </div>
 
     <!-- 底部指令台 (Bottom Console) -->
-    <div class="bottom-console" @click="showCreateModal = true">
-      <div class="console-frame">
-        <div class="input-area">
-          <span class="prompt">></span>
+    <div
+      class="bottom-console h-24 px-10 pb-5 z-10"
+      @click="showCreateModal = true"
+    >
+      <div
+        class="console-frame w-full h-full bg-panel-bg border border-neon-blue/30 backdrop-blur-[5px] flex items-center px-8 justify-between cursor-pointer transition-all duration-300 hover:bg-dark-bg/80 hover:shadow-[0_-5px_20px_rgba(0,243,255,0.1)]"
+      >
+        <div
+          class="input-area flex-1 ml-5 font-share-tech-mono text-lg text-neon-blue"
+        >
+          <span class="prompt mr-2.5">></span>
           <span class="cursor">_</span>
-          <span class="placeholder">  点击此处录入新的时空节点数据...</span>
+          <span class="placeholder text-white/30 text-sm">
+            点击此处录入新的时空节点数据...</span
+          >
         </div>
-        <div class="console-stats">
+        <div
+          class="console-stats flex flex-col font-share-tech-mono text-[10px] text-white/40 border-l border-white/10 pl-2.5"
+        >
           <span>MEM: 64TB</span>
           <span>CPU: 12%</span>
         </div>
@@ -176,26 +227,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap");
-
-.desktop-container {
-  --neon-blue: #00f3ff;
-  --neon-purple: #bc13fe;
-  --neon-red: #ff0055;
-  --dark-bg: #050b14;
-  --panel-bg: rgba(5, 11, 20, 0.6);
-
-  width: 100vw;
-  height: 100vh;
-  background-color: var(--dark-bg);
-  overflow: hidden;
-  position: relative;
-  font-family: "Rajdhani", sans-serif;
-  color: var(--neon-blue);
-  display: flex;
-  flex-direction: column;
-}
-
 /* --- Deep Space Background --- */
 .perspective-grid {
   position: absolute;
@@ -258,56 +289,10 @@ onUnmounted(() => {
   z-index: 5;
 }
 
-/* --- Status Bar --- */
-.status-bar {
-  height: 40px;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  border-bottom: 1px solid rgba(0, 243, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0 20px;
-  gap: 20px;
-  z-index: 100;
-  font-family: "Share Tech Mono";
-  font-size: 12px;
-}
-
-.status-item {
-  display: flex;
-  gap: 5px;
-}
-.status-label {
-  color: rgba(255, 255, 255, 0.5);
-}
-.status-value {
-  color: #fff;
-}
-.status-value.connected {
-  color: #0f0;
-  text-shadow: 0 0 5px #0f0;
-}
-
-.logout-trigger {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  color: var(--neon-red);
-  border: 1px solid rgba(255, 0, 85, 0.3);
-  padding: 2px 8px;
-  border-radius: 4px;
-  transition: all 0.3s;
-}
-.logout-trigger:hover {
-  background: rgba(255, 0, 85, 0.1);
-  box-shadow: 0 0 10px rgba(255, 0, 85, 0.3);
-}
 .icon-power {
   width: 12px;
   height: 12px;
-  border: 2px solid var(--neon-red);
+  border: 2px solid #ff0055;
   border-radius: 50%;
   position: relative;
 }
@@ -319,78 +304,18 @@ onUnmounted(() => {
   transform: translateX(-50%);
   width: 2px;
   height: 6px;
-  background: var(--neon-red);
-}
-
-/* --- Main Console Grid --- */
-.main-console {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 300px 1fr 300px; /* 三栏布局 */
-  gap: 20px;
-  padding: 40px;
-  perspective: 1000px;
-  z-index: 10;
-}
-
-.console-column {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  border-bottom: 2px solid rgba(0, 243, 255, 0.3);
-  padding-bottom: 5px;
-}
-.panel-title {
-  font-family: "Share Tech Mono";
-  font-size: 14px;
-  color: rgba(0, 243, 255, 0.7);
+  background: #ff0055;
 }
 .panel-deco {
   width: 20px;
   height: 20px;
   background: repeating-linear-gradient(
     45deg,
-    var(--neon-blue),
-    var(--neon-blue) 2px,
+    #00f3ff,
+    #00f3ff 2px,
     transparent 2px,
     transparent 4px
   );
-}
-
-.panel-content {
-  flex: 1;
-  background: var(--panel-bg);
-  border: 1px solid rgba(0, 243, 255, 0.2);
-  backdrop-filter: blur(5px);
-  position: relative;
-  transition: all 0.3s;
-}
-.panel-content:hover {
-  border-color: var(--neon-blue);
-  box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
-}
-
-/* Left Wing: Album List Wrapper */
-.album-list-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
-  cursor: pointer;
-}
-
-/* Center Core: Chrono Dial */
-.center-core {
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
 }
 .core-ring-outer {
   position: absolute;
@@ -432,110 +357,9 @@ onUnmounted(() => {
   width: 280px;
   height: 280px;
   border-radius: 50%;
-  border-top: 2px solid var(--neon-blue);
-  box-shadow: 0 -5px 10px var(--neon-blue);
+  border-top: 2px solid #00f3ff;
+  box-shadow: 0 -5px 10px #00f3ff;
   transition: transform 1s linear;
-}
-.time-display {
-  text-align: center;
-  z-index: 10;
-}
-.time-label {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: 2px;
-}
-.time-value {
-  font-size: 64px;
-  font-weight: bold;
-  color: #fff;
-  text-shadow: 0 0 20px var(--neon-blue);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-.date-value {
-  font-size: 18px;
-  color: var(--neon-blue);
-}
-
-.core-status {
-  margin-top: 40px;
-  padding: 5px 15px;
-  background: rgba(0, 243, 255, 0.1);
-  border: 1px solid var(--neon-blue);
-  border-radius: 20px;
-}
-.status-text {
-  font-family: "Share Tech Mono";
-  font-size: 12px;
-  letter-spacing: 2px;
-}
-
-/* Right Wing: Player */
-.player-wrapper {
-  padding: 10px;
-  overflow: hidden;
-}
-
-/* Bottom Console */
-.bottom-console {
-  height: 100px;
-  padding: 0 40px 20px 40px;
-  z-index: 10;
-}
-.console-frame {
-  width: 100%;
-  height: 100%;
-  background: var(--panel-bg);
-  border: 1px solid rgba(0, 243, 255, 0.3);
-  backdrop-filter: blur(5px);
-  display: flex;
-  align-items: center;
-  padding: 0 30px;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-.console-frame:hover {
-  background: rgba(5, 11, 20, 0.8);
-  box-shadow: 0 -5px 20px rgba(0, 243, 255, 0.1);
-}
-
-.console-label {
-  font-family: "Share Tech Mono";
-  color: var(--neon-blue);
-  font-size: 14px;
-  font-weight: bold;
-  border-right: 2px solid rgba(0, 243, 255, 0.5);
-  padding-right: 15px;
-  margin-right: 10px;
-  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
-  white-space: nowrap;
-}
-
-.input-area {
-  flex: 1;
-  margin-left: 20px;
-  font-family: "Share Tech Mono";
-  font-size: 18px;
-  color: var(--neon-blue);
-}
-.prompt {
-  margin-right: 10px;
-}
-.placeholder {
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 14px;
-}
-
-.console-stats {
-  display: flex;
-  flex-direction: column;
-  font-family: "Share Tech Mono";
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.4);
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  padding-left: 10px;
 }
 
 /* Mobile Adaption */
@@ -555,74 +379,12 @@ onUnmounted(() => {
   }
   .bottom-console {
     display: none;
-  } /* 移动端隐藏底部控制台，或简化 */
+  }
 }
 
 @keyframes rotate-slow {
   100% {
     transform: rotate(360deg);
   }
-}
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-.archive-action {
-  margin-top: auto;
-  width: 100%;
-  padding-top: 15px;
-  border-top: 1px solid rgba(0, 243, 255, 0.1);
-}
-
-.cyber-archive-btn {
-  --n-text-color: #00f3ff !important;
-  --n-text-color-hover: #00f3ff !important;
-  --n-text-color-pressed: #00f3ff !important;
-  --n-text-color-focus: #00f3ff !important;
-  --n-icon-color: #00f3ff !important;
-  --n-icon-color-hover: #00f3ff !important;
-  --n-icon-color-pressed: #00f3ff !important;
-  --n-icon-color-focus: #00f3ff !important;
-  --n-border-color: rgba(0, 243, 255, 0.3);
-  --n-border-color-hover: #00f3ff;
-  --n-border-color-pressed: #00f3ff;
-  --n-border-color-focus: #00f3ff;
-  
-  font-family: "Share Tech Mono";
-  font-weight: bold;
-  letter-spacing: 1px;
-  background: rgba(0, 243, 255, 0.05);
-  transition: all 0.3s;
-  color: #00f3ff !important;
-}
-
-/* 强制覆盖按钮内部文字和图标颜色 */
-.cyber-archive-btn :deep(.n-button__content) {
-  color: #00f3ff !important;
-}
-
-.cyber-archive-btn :deep(.n-icon) {
-  color: #00f3ff !important;
-}
-
-/* 强力覆盖 Naive UI 的内部边框样式 */
-.cyber-archive-btn :deep(.n-button__border),
-.cyber-archive-btn :deep(.n-button__state-border) {
-  border: 1px solid rgba(0, 243, 255, 0.3) !important;
-}
-
-.cyber-archive-btn:hover :deep(.n-button__border),
-.cyber-archive-btn:hover :deep(.n-button__state-border),
-.cyber-archive-btn:focus :deep(.n-button__border),
-.cyber-archive-btn:focus :deep(.n-button__state-border) {
-  border-color: var(--neon-blue) !important;
-}
-
-.cyber-archive-btn:hover {
-  background: rgba(0, 243, 255, 0.15);
-  box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
-  text-shadow: 0 0 5px var(--neon-blue);
 }
 </style>

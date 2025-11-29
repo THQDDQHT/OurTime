@@ -1,5 +1,5 @@
 <template>
-  <div class="timeline-container">
+  <div class="timeline-container w-screen h-screen bg-dark-bg overflow-hidden relative font-rajdhani text-neon-blue flex flex-col">
     <!-- 背景层 (复用 DesktopHome 风格) -->
     <div class="perspective-grid"></div>
     <div class="stars"></div>
@@ -7,23 +7,23 @@
     <div class="vignette"></div>
 
     <!-- 顶部导航 -->
-    <div class="timeline-header">
-      <div class="back-btn" @click="router.back()">
+    <div class="timeline-header h-[60px] px-8 flex justify-between items-center bg-black/80 border-b border-neon-blue/30 z-[100]">
+      <div class="back-btn cursor-pointer flex items-center gap-2.5 font-share-tech-mono text-white/70 transition-colors duration-300 hover:text-neon-blue hover:text-shadow-glow-blue-sm" @click="router.back()">
         <span class="icon-arrow"><</span>
         <span>RETURN_TO_DESKTOP // 返回桌面</span>
       </div>
-      <div class="header-title">CHRONO_ARCHIVE // 时间轴</div>
+      <div class="header-title font-share-tech-mono text-lg tracking-[2px] text-neon-blue">CHRONO_ARCHIVE // 时间轴</div>
     </div>
 
     <!-- 时间轴主体 -->
-    <div class="timeline-content" ref="scrollContainer">
-      <div class="moments-list" v-if="moments.length > 0">
+    <div class="timeline-content flex-1 relative overflow-y-auto overflow-x-hidden py-10 z-10" ref="scrollContainer">
+      <div class="moments-list w-full max-w-[1000px] mx-auto relative min-h-full pb-24" v-if="moments.length > 0">
         <!-- 极简激光中轴线 -->
         <div class="central-line"></div>
         <div
           v-for="(moment, index) in moments"
           :key="moment.id"
-          class="moment-item"
+          class="moment-item relative w-1/2 px-10 mb-16 box-border flex flex-col opacity-0 transition-all duration-[800ms]"
           :class="{ 
             'left': index % 2 === 0, 
             'right': index % 2 !== 0,
@@ -32,35 +32,36 @@
           :ref="(el) => observeItem(el, moment.id)"
         >
           <!-- 时间点指示器 -->
-          <div class="time-node">
-            <div class="node-dot">
+          <div class="time-node absolute top-0 flex items-center z-20">
+            <div class="node-dot w-5 h-5 flex items-center justify-center relative bg-dark-bg rounded-full z-[2]">
               <div class="dot-core"></div>
               <div class="dot-ring"></div>
             </div>
-            <div class="node-date">{{ formatDate(moment.createdAt) }}</div>
+            <div class="node-date font-share-tech-mono text-neon-blue text-sm bg-dark-bg/80 px-2.5 py-1 rounded-xl border border-neon-blue/20 whitespace-nowrap transition-all duration-300 text-shadow-glow-blue-sm hover:bg-neon-blue/10 hover:border-neon-blue hover:shadow-glow-blue-sm">{{ formatDate(moment.createdAt) }}</div>
           </div>
 
           <!-- 内容卡片 -->
-          <div class="moment-card">
+          <div class="moment-card bg-gradient-to-br from-dark-bg/90 to-[rgba(10,21,37,0.9)] border border-neon-blue/30 rounded p-4 w-4/5 max-w-[400px] relative transition-all duration-300 mt-10 shadow-[0_4px_15px_rgba(0,0,0,0.5)] backdrop-blur-[10px] hover:border-neon-blue hover:shadow-glow-blue-sm hover:-translate-y-0.5">
             <!-- <div class="card-header">
               <span class="moment-id">ID: {{ moment.id?.toString().padStart(4, '0') }}</span>
               <div class="card-deco"></div>
             </div> -->
             
-            <div class="card-body">
-              <p class="moment-text">{{ moment.content }}</p>
+            <div class="card-body text-base text-white leading-relaxed">
+              <p class="moment-text mb-2.5 break-all">{{ moment.content }}</p>
               
               <!-- 图片展示 (如果有) -->
-              <div class="moment-photos" v-if="moment.photos && moment.photos.length > 0">
+              <div class="moment-photos grid grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 mt-2.5" v-if="moment.photos && moment.photos.length > 0">
                 <div 
                   v-for="photo in moment.photos" 
                   :key="photo.id" 
-                  class="photo-wrapper"
+                  class="photo-wrapper aspect-square overflow-hidden border border-neon-blue/30 rounded-sm"
                 >
                   <img 
                     :src="resolveUploadUrl(photo.filePath)" 
                     loading="lazy" 
                     alt="Memory capture"
+                    class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
               </div>
@@ -69,8 +70,8 @@
         </div>
       </div>
       
-      <div class="empty-state" v-else>
-        <div class="empty-text">NO_DATA_FOUND // 暂无时间记录</div>
+      <div class="empty-state flex justify-center mt-24" v-else>
+        <div class="empty-text font-share-tech-mono text-white/30 text-lg">NO_DATA_FOUND // 暂无时间记录</div>
       </div>
     </div>
   </div>
@@ -135,25 +136,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap");
-
-.timeline-container {
-  --neon-blue: #00f3ff;
-  --neon-purple: #bc13fe;
-  --dark-bg: #050b14;
-  --card-bg: rgba(5, 11, 20, 0.8);
-
-  width: 100vw;
-  height: 100vh;
-  background-color: var(--dark-bg);
-  overflow: hidden;
-  position: relative;
-  font-family: "Rajdhani", sans-serif;
-  color: var(--neon-blue);
-  display: flex;
-  flex-direction: column;
-}
-
 /* --- Background Layers (Copied & Simplified) --- */
 .perspective-grid {
   position: absolute;
@@ -202,56 +184,6 @@ onMounted(() => {
   z-index: 5;
 }
 
-/* --- Header --- */
-.timeline-header {
-  height: 60px;
-  padding: 0 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.8);
-  border-bottom: 1px solid rgba(0, 243, 255, 0.3);
-  z-index: 100;
-}
-.back-btn {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: "Share Tech Mono";
-  color: rgba(255, 255, 255, 0.7);
-  transition: color 0.3s;
-}
-.back-btn:hover {
-  color: var(--neon-blue);
-  text-shadow: 0 0 8px var(--neon-blue);
-}
-.header-title {
-  font-family: "Share Tech Mono";
-  font-size: 18px;
-  letter-spacing: 2px;
-  color: var(--neon-blue);
-}
-
-/* --- Content & Timeline --- */
-.timeline-content {
-  flex: 1;
-  position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 40px 0;
-  z-index: 10;
-}
-
-/* 滚动条样式 */
-.timeline-content::-webkit-scrollbar {
-  width: 6px;
-}
-.timeline-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 243, 255, 0.3);
-  border-radius: 3px;
-}
-
 /* --- Central Line (Ethereal Line) --- */
 .central-line {
   position: absolute;
@@ -290,77 +222,6 @@ onMounted(() => {
   100% { background-position: 0 1000px, 20px 1040px, -10px 1060px; }
 }
 
-.moments-list {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  position: relative;
-  min-height: 100%;
-  padding-bottom: 100px; /* 底部留白 */
-}
-
-.moment-item {
-  position: relative;
-  width: 50%;
-  padding: 0 40px;
-  margin-bottom: 60px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  opacity: 0;
-  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.moment-item.left {
-  left: 0;
-  align-items: flex-end;
-  text-align: right;
-  transform: translateX(-50px);
-}
-
-.moment-item.right {
-  left: 50%;
-  align-items: flex-start;
-  text-align: left;
-  transform: translateX(50px);
-}
-
-.moment-item.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* --- Node Indicator (Star System) --- */
-.time-node {
-  position: absolute;
-  top: 0;
-  display: flex;
-  align-items: center;
-  z-index: 20;
-}
-
-.moment-item.left .time-node {
-  right: -10px; /* Center on the axis */
-  flex-direction: row-reverse;
-}
-
-.moment-item.right .time-node {
-  left: -10px; /* Center on the axis */
-  flex-direction: row;
-}
-
-.node-dot {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  background: var(--dark-bg); /* 确保节点背景遮挡中轴线，营造穿过感 */
-  border-radius: 50%;
-  z-index: 2; /* 确保在光束上方 */
-}
-
 .dot-core {
   width: 6px;
   height: 6px;
@@ -368,7 +229,7 @@ onMounted(() => {
   border-radius: 50%;
   box-shadow: 
     0 0 8px #fff, 
-    0 0 15px var(--neon-blue);
+    0 0 15px #00f3ff;
   z-index: 2;
   animation: star-pulse 2s infinite alternate;
 }
@@ -409,55 +270,6 @@ onMounted(() => {
   100% { transform: rotate(360deg); }
 }
 
-.node-date {
-  font-family: "Share Tech Mono";
-  color: var(--neon-blue);
-  font-size: 14px;
-  background: rgba(5, 11, 20, 0.8);
-  padding: 4px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 243, 255, 0.2);
-  white-space: nowrap;
-  transition: all 0.3s;
-  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
-}
-
-.moment-item.left .node-date {
-  margin-right: 25px;
-}
-.moment-item.right .node-date {
-  margin-left: 25px;
-}
-
-/* Hover effect on date */
-.time-node:hover .node-date {
-  background: rgba(0, 243, 255, 0.1);
-  border-color: var(--neon-blue);
-  box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
-}
-
-
-/* --- Card --- */
-.moment-card {
-  background: linear-gradient(145deg, rgba(5, 11, 20, 0.9), rgba(10, 21, 37, 0.9));
-  border: 1px solid rgba(0, 243, 255, 0.3);
-  border-radius: 4px;
-  padding: 15px;
-  width: 80%;
-  max-width: 400px;
-  position: relative;
-  transition: all 0.3s ease;
-  margin-top: 40px; /* Reduced spacing */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-}
-
-.moment-card:hover {
-  border-color: var(--neon-blue);
-  box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
-  transform: translateY(-2px);
-}
-
 /* Connector Lines (Removed) */
 /*
 .moment-card::before {
@@ -489,8 +301,8 @@ onMounted(() => {
   position: absolute;
   width: 4px;
   height: 4px;
-  background: var(--neon-blue);
-  box-shadow: 0 0 5px var(--neon-blue);
+  background: #00f3ff;
+  box-shadow: 0 0 5px #00f3ff;
   border-radius: 50%;
 }
 .moment-item.left .moment-card::after {
@@ -517,93 +329,68 @@ onMounted(() => {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.5);
 }
-.card-deco {
-  width: 30px;
-  height: 4px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--neon-blue),
-    var(--neon-blue) 2px,
-    transparent 2px,
-    transparent 4px
-  );
+/* Tailwind 类样式 */
+.moment-item.left {
+  left: 0;
+  align-items: flex-end;
+  text-align: right;
+  transform: translateX(-50px);
 }
 
-.card-body {
-  font-size: 16px;
-  color: #fff;
-  line-height: 1.5;
+.moment-item.right {
+  left: 50%;
+  align-items: flex-start;
+  text-align: left;
+  transform: translateX(50px);
 }
 
-.moment-text {
-  margin-bottom: 10px;
-  word-break: break-all;
+.moment-item.visible {
+  opacity: 1;
+  transform: translateX(0);
 }
 
-.moment-photos {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 8px;
-  margin-top: 10px;
-}
-.photo-wrapper {
-  aspect-ratio: 1;
-  overflow: hidden;
-  border: 1px solid rgba(0, 243, 255, 0.3);
-  border-radius: 2px;
-}
-.photo-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s;
-}
-.photo-wrapper img:hover {
-  transform: scale(1.1);
+.moment-item.left .time-node {
+  right: -10px;
+  flex-direction: row-reverse;
 }
 
-.empty-state {
-  display: flex;
-  justify-content: center;
-  margin-top: 100px;
+.moment-item.right .time-node {
+  left: -10px;
+  flex-direction: row;
 }
-.empty-text {
-  font-family: "Share Tech Mono";
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 18px;
+
+.moment-item.left .node-date {
+  margin-right: 25px;
+}
+.moment-item.right .node-date {
+  margin-left: 25px;
 }
 
 /* Mobile Adaption */
 @media (max-width: 768px) {
-  /* 
-  .central-line {
-    left: 20px;
-    width: 4px;
-  }
-  */
   .moment-item {
     width: 100%;
-    padding-left: 60px; /* More space for axis */
+    padding-left: 60px;
     padding-right: 20px;
     text-align: left !important;
     align-items: flex-start !important;
     left: 0 !important;
-    transform: none !important; /* Reset transform */
+    transform: none !important;
   }
   .moment-item.visible {
     transform: none !important;
   }
   
-  /* Reset Time Node for Mobile */
   .moment-item.left .time-node,
   .moment-item.right .time-node {
-    left: 10px; /* Center on the 20px axis (20 - 10 = 10) */
+    left: 10px;
     right: auto;
     flex-direction: row;
     top: 0;
   }
   
-  .node-date {
+  .moment-item.left .node-date,
+  .moment-item.right .node-date {
     margin-left: 25px !important;
     margin-right: 0 !important;
     font-size: 12px;
@@ -612,25 +399,6 @@ onMounted(() => {
   .moment-card {
     width: 100%;
     max-width: none;
-    margin-top: 40px;
-  }
-  
-  /* Mobile Connector: Always from left */
-  .moment-item.left .moment-card::before,
-  .moment-item.right .moment-card::before {
-    left: -40px; /* 60px padding - 20px axis = 40px distance */
-    right: auto;
-    border-left: 1px dashed rgba(0, 243, 255, 0.5);
-    border-right: none;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 0;
-    width: 40px;
-  }
-  
-  .moment-item.left .moment-card::after,
-  .moment-item.right .moment-card::after {
-    left: -2px;
-    right: auto;
   }
 }
 </style>
