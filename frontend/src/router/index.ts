@@ -16,12 +16,6 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/home-old',
-    name: 'HomeOld',
-    component: () => import('@/views/Home.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
     path: '/albums',
     redirect: '/'
   },
