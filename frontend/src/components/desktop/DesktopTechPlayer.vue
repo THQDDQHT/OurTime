@@ -88,15 +88,14 @@
       @loadedmetadata="handleLoadedMetadata"
     ></audio>
 
-    <!-- 歌单管理弹窗 (复用之前的逻辑，样式适配科技风) -->
     <n-modal
       v-model:show="showManageModal"
       preset="card"
-      title="数据矩阵 // DATA_MATRIX"
+      title="数据矩阵"
       size="huge"
-      style="width: 800px; max-width: 90vw"
+      style="width: 800px; max-width: 90vw; min-height: 400px"
     >
-      <n-tabs type="segment">
+      <n-tabs type="bar" justify-content="space-evenly">
         <n-tab-pane name="list" tab="当前序列">
           <n-list hoverable clickable>
             <n-list-item v-for="song in musicStore.playlist" :key="song.id">
@@ -142,7 +141,7 @@
                 :show-file-list="false"
                 accept=".mp3,.wav,.m4a,.flac"
               >
-                <n-button v-if="!form.url" block class="text-neon-blue"
+                <n-button v-if="!form.url" ghost block size="small"
                   >选择文件</n-button
                 >
                 <n-text v-else type="success"
@@ -157,26 +156,20 @@
                 :show-file-list="false"
                 accept="image/*"
               >
-                <div
-                  class="upload-cover-preview text-neon-blue"
-                  v-if="form.coverUrl"
-                >
+                <div class="upload-cover-preview" v-if="form.coverUrl">
                   <img :src="resolveUploadUrl(form.coverUrl)" />
                 </div>
-                <n-button v-else class="text-neon-blue" block
-                  >上传图像</n-button
-                >
+                <n-button v-else ghost block size="small">上传图像</n-button>
               </n-upload>
             </n-form-item>
 
             <div>
               <n-button
-                type="primary"
+                size="small"
                 ghost
                 block
                 @click="handleSubmit"
                 :loading="submitting"
-                color="#00f3ff"
                 >执行注入</n-button
               >
             </div>

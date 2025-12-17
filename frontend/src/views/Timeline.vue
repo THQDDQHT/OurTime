@@ -10,18 +10,14 @@
 
     <!-- 顶部导航 -->
     <div
-      class="h-[60px] px-8 flex justify-between items-center bg-black/80 border-b border-neon-blue/30 z-[100]"
+      class="h-10 w-full border-b border-neon-blue/30 flex items-center px-5 gap-5 z-[100]"
     >
-      <div
-        class="cursor-pointer flex items-center gap-2.5 font-share-tech-mono text-white/70 transition-colors duration-300 hover:text-neon-blue hover:text-shadow-glow-blue-sm"
-        @click="router.back()"
-      >
-        <span><</span>
-        <span>RETURN_TO_DESKTOP // 返回桌面</span>
-      </div>
-      <div class="font-share-tech-mono text-lg tracking-[2px] text-neon-blue">
-        CHRONO_ARCHIVE // 时间轴
-      </div>
+      <n-button @click="router.back()" ghost secondary size="small">
+        <template #icon>
+          <n-icon><ChevronBackOutline /></n-icon>
+        </template>
+        返回桌面
+      </n-button>
     </div>
 
     <!-- 时间轴主体 -->
@@ -107,6 +103,7 @@ import type { ComponentPublicInstance } from "vue";
 import { getMoments } from "@/api/moment";
 import { resolveUploadUrl } from "@/utils/url";
 import type { MomentResponse } from "@/api/types";
+import { ChevronBackOutline } from "@vicons/ionicons5";
 
 const router = useRouter();
 const moments = ref<MomentResponse[]>([]);

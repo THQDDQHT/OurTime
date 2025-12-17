@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="min-h-screen bg-dark-bg relative overflow-hidden"
-  >
+  <div class="min-h-screen bg-dark-bg relative overflow-hidden">
     <div class="cyber-grid-bg"></div>
     <n-layout class="layout-bg">
       <n-layout-header
@@ -75,9 +73,7 @@
               >
                 {{ album.name }}
               </h1>
-              <p
-                class="text-white/70 text-sm mb-4 font-share-tech-mono"
-              >
+              <p class="text-white/70 text-sm mb-4 font-share-tech-mono">
                 {{ album.description || "元数据缺失..." }}
               </p>
               <div>
@@ -94,7 +90,8 @@
 
           <n-tabs
             v-model:value="activeTab"
-            type="segment"
+            type="bar"
+            justify-content="space-evenly"
             animated
           >
             <n-tab-pane name="timeline" tab="时间轴回溯">
@@ -173,10 +170,10 @@
                   <n-empty v-else description="无视觉数据" />
                 </n-spin>
 
-                  <div
-                    v-if="hasMore && allPhotos.length > 0"
-                    class="text-center mt-12 pb-8"
-                  >
+                <div
+                  v-if="hasMore && allPhotos.length > 0"
+                  class="text-center mt-12 pb-8"
+                >
                   <n-button
                     text
                     @click="loadMore"

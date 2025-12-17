@@ -72,10 +72,10 @@
 
     <template #footer>
       <div class="actions">
-        <n-button ghost @click="handleClose" class="cancel-btn">中止</n-button>
+        <n-button @click="handleClose">中止</n-button>
         <n-button
-          type="primary"
           :loading="loading"
+          ghost
           @click="handleSubmit"
           class="cyber-btn"
         >
@@ -343,12 +343,5 @@ onMounted(() => {
 
 .cyber-btn {
   letter-spacing: 2px;
-}
-
-.cancel-btn {
-  color: rgba(255, 255, 255, 0.6);
-}
-.cancel-btn:hover {
-  color: #fff;
 }
 </style>
